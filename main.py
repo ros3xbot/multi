@@ -160,8 +160,8 @@ def run_menu():
     elif choice == "3":
         import master3 as master
     else:
-        print_error("Pilihan tidak valid", "Default ke Master1")
-        import master1 as master
+        print_error("Pilihan tidak valid", "Default ke Master2")
+        import master2 as master
 
     try:
         master.main()
