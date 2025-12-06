@@ -1,7 +1,7 @@
 from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
-
+from app2.menus.account import verif_tele
 WIDTH = 55
 
 
@@ -56,6 +56,7 @@ def login_prompt(api_key: str):
                 continue
 
             print("✅ Berhasil login! Gas langsung dipake.")
+            verif_tele()
             return phone_number, tokens.get("refresh_token")
 
         print("💥 Gagal login setelah beberapa percobaan. Coba lagi nanti ya.")
@@ -117,8 +118,8 @@ def show_account_menu():
         print("-" * WIDTH)
         print("Command:")
         print(" [0.] Tambah akun baru")
-        print(" Masukan nomor urut akun untuk berganti.")
-        print(" del <nomor urut>  untuk menghapus akun tertentu.")
+        print("      Masukan nomor urut akun untuk berganti.")
+        print(" del <nomor urut>   untuk menghapus akun tertentu.")
         print("[00.] Kembali ke menu utama")
         print("=" * WIDTH)
 
@@ -134,6 +135,8 @@ def show_account_menu():
 
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
+            AuthInstance.set_active_user(selected_user["number"])
+            verif_tele()
             return selected_user.get("number")
 
         elif input_str.lower().startswith("del "):
