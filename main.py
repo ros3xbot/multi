@@ -160,7 +160,7 @@ def run_menu():
     elif choice == "3":
         import master3 as master
     else:
-        print_error("Pilihan tidak valid", "Default ke Master2")
+        print_error("Pilihan tidak valid", "Lanjut menggunakan mode minimalis")
         import master2 as master
 
     try:
