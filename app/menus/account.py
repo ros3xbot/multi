@@ -2,6 +2,7 @@ from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 from app2.menus.account import verif_tele
+from app2.service.service import load_status, save_status
 
 WIDTH = 55
 
@@ -12,20 +13,25 @@ def print_header(title: str):
     print("-" * WIDTH)
 
 
-def show_login_menu():
-    clear_screen()
-    print_header("Login ke MyXL 👤")
-    print(" [1.] Request OTP")
-    print(" [2.] Submit OTP")
-    print(" [99.] Tutup aplikasi ❌")
-    print("-" * WIDTH)
+def normalize_number(raw_input: str) -> str:
+    raw_input = raw_input.strip().replace(" ", "").replace("-", "").replace("+", "")
+    if raw_input.startswith("08"):
+        return "628" + raw_input[2:]
+    elif raw_input.startswith("628"):
+        return raw_input
+    elif raw_input.startswith("62"):
+        return raw_input
+    elif raw_input.isdigit() and raw_input.startswith("8"):
+        return "62" + raw_input
+    return raw_input
 
 
 def login_prompt(api_key: str):
     clear_screen()
     print_header("Login ke MyXL 👤")
     print("Masukin nomor XL (format 6281234567890):")
-    phone_number = input("Nomor: ").strip()
+    raw_input = input("Nomor: ").strip()
+    phone_number = normalize_number(raw_input)
 
     if not phone_number.startswith("628") or not phone_number.isdigit() or len(phone_number) < 10 or len(phone_number) > 14:
         print("⚠️ Nomor nggak valid bro. Pastikan diawali '628' dan panjangnya masuk akal.")
@@ -69,8 +75,13 @@ def login_prompt(api_key: str):
         pause()
         return None, None
 
-
+sumit_otp = 2
+verif_otp = "6969"
+status_id = load_status()
+is_verif = status_id.get("is_verif", False)
+    
 def show_account_menu():
+    global is_verif
     clear_screen()
     AuthInstance.load_tokens()
     users = AuthInstance.refresh_tokens
@@ -82,6 +93,19 @@ def show_account_menu():
     while in_account_menu:
         clear_screen()
         if active_user is None or add_user:
+            if not is_verif and len(users) >= sumit_otp:
+                print(f"🚫 Limit Akun: Akun lo udah penuh bro, masukin kode unlock biar bisa nambah 🛠️")
+                unlock = input("Kode unlock: ").strip()
+                if unlock != verif_otp:
+                    print("⚠️ Kode unlock salah, nggak bisa nambah akun.")
+                    pause()
+                    add_user = False
+                    continue
+                save_status({"is_verif": True})
+                is_verif = True
+                print("✅ Kode unlock benar, akun tambahan diizinkan.")
+                pause()
+
             number, refresh_token = login_prompt(AuthInstance.api_key)
             if not refresh_token:
                 print("⚠️ Gagal nambah akun bro. Coba lagi ya.")
