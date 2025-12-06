@@ -30,7 +30,7 @@ from app.service.crypto_helper import decrypt_circle_msisdn as decrypt_msisdn
 API_KEY = os.getenv("API_KEY")
 AES_KEY_ASCII = os.getenv("AES_KEY_ASCII")
 AX_FP_KEY = os.getenv("AX_FP_KEY")
-ENCRYPTED_FIELD_KEY=os.getenv("ENCRYPTED_FIELD_KEY")
+ENCRYPTED_FIELD_KEY = "5dccbf08920a5527"
 @dataclass
 class DeviceInfo:
     manufacturer: str
