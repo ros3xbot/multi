@@ -3,10 +3,15 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-XDATA_KEY=os.getenv("XDATA_KEY")
-AX_API_SIG_KEY=os.getenv("AX_API_SIG_KEY")
-X_API_BASE_SECRET=os.getenv("X_API_BASE_SECRET")
-ENCRYPTED_FIELD_KEY=os.getenv("ENCRYPTED_FIELD_KEY")
+#XDATA_KEY=os.getenv("XDATA_KEY")
+#AX_API_SIG_KEY=os.getenv("AX_API_SIG_KEY")
+#X_API_BASE_SECRET=os.getenv("X_API_BASE_SECRET")
+#ENCRYPTED_FIELD_KEY=os.getenv("ENCRYPTED_FIELD_KEY")
+
+XDATA_KEY = "5dccbf08920a5527b99e222789c34bb7"
+AX_API_SIG_KEY = "18b4d589826af50241177961590e6693"
+X_API_BASE_SECRET = "mU1Y4n1vBjf3M7tMnRkFU08mVyUJHed8B5En3EAniu1mXLixeuASmBmKnkyzVziOye7rG5nIekMdthensbQMcOJ6SLnrkGyfXALD7mrBC6vuWv6G01pmD3XlU5rT7Tzx"
+ENCRYPTED_FIELD_KEY = "5dccbf08920a5527"
 
 def derive_iv(xtime_ms: int) -> bytes:
     sha = hashlib.sha256(str(xtime_ms).encode()).hexdigest()
