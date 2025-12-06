@@ -59,7 +59,8 @@ def merge_hot1(api_url: str, prefer_server: bool = True):
                 pkg["source"] = "local"
                 merged[key] = pkg
     except FileNotFoundError:
-        print(f"{local_file} tidak ditemukan.")
+        #print(f"{local_file} tidak ditemukan.")
+        pass  # tetap silent
 
     try:
         response = requests.get(api_url, timeout=30)
@@ -71,9 +72,11 @@ def merge_hot1(api_url: str, prefer_server: bool = True):
                 if prefer_server or key not in merged:
                     merged[key] = pkg
         else:
-            print("Gagal ambil data hot1 dari server.")
+            #print("Gagal ambil data hot1 dari server.")
+            pass  # tetap silent
     except requests.RequestException as e:
-        print(f"Error API hot1: {e}")
+        #print(f"Error API hot1: {e}")
+        pass  # tetap silent
 
     return list(merged.values())
 
@@ -96,7 +99,8 @@ def merge_hot2(api_url: str, prefer_server: bool = True):
                 pkg["source"] = "local"
                 merged[key] = pkg
     except FileNotFoundError:
-        print(f"{local_file} tidak ditemukan.")
+        #print(f"{local_file} tidak ditemukan.")
+        pass  # tetap silent
 
     try:
         response = requests.get(api_url, timeout=30)
@@ -108,8 +112,10 @@ def merge_hot2(api_url: str, prefer_server: bool = True):
                 if prefer_server or key not in merged:
                     merged[key] = pkg
         else:
-            print("Gagal ambil data hot2 dari server.")
+            #print("Gagal ambil data hot2 dari server.")
+            pass  # tetap silent
     except requests.RequestException as e:
-        print(f"Error API hot2: {e}")
+        #print(f"Error API hot2: {e}")
+        pass  # tetap silent
 
     return list(merged.values())
