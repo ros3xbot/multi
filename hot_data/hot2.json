@@ -1,0 +1,214 @@
+[
+    {
+        "name": "Masa Aktif 45 Hari + 50GB*",
+        "price": "Rp1000 (refund)",
+        "detail": "Membuat masa aktif menjadi 45 hari dari tanggal pembelian. Tidak bisa akumulasi.\nSupport E-Wallet & QRIS.\nSaldo akan di-refund setelah 10-30 menit.\nPastikan metode scan QRIS support refund.\n\n*Bonus kuota bersama 50GB untuk kartu pengelola XL Satu Home/Fiber.",
+        "packages": [
+            {
+                "family_name": "Kuota Bersama",
+                "family_code": "d018a3ad-172f-433c-b291-f574f4b6fbad",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_name": "Kuota Bersama",
+                "variant_code": "8a5965c2-d29c-48aa-8175-0ef53745d8fa",
+                "option_name": "Kuota HP Sekeluarga 50GB",
+                "order": 1
+            },
+            {
+                "family_name": "Apps Quota Xtra Combo Plus 2GB",
+                "family_code": "580c1f94-7dc4-416e-96f6-8faf26567516",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "b50f954a-696e-46d0-8700-8e4d38521525",
+                "option_name": "EWALLET & QRIS 1K",
+                "order": 24
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 1000,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    },
+    {
+        "name": "Reset Quota Youtube 4GB",
+        "price": "Rp0",
+        "detail": "Reset Quota Youtube 4GB (XCP only).\nSupported payment: Balance / pulsa.",
+        "packages": [
+            {
+                "family_name": "Kuota Aplikasi Xtra Combo Plus 2GB",
+                "family_code": "580c1f94-7dc4-416e-96f6-8faf26567516",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_name": "Bonus Xtra Combo Plus 2GB",
+                "variant_code": "b50f954a-696e-46d0-8700-8e4d38521525",
+                "option_name": "YouTube 4GB",
+                "order": 8
+            },
+            {
+                "family_name": "",
+                "family_code": "b0a20d74-0c54-4e3b-8f3f-01e7482e50bf",
+                "is_enterprise": true,
+                "migration_type": "NONE",
+                "variant_code": "719d093f-6f8d-46a4-8390-6a0003a172ea",
+                "option_name": "",
+                "order": 1
+            }
+        ],
+        "payment_for": "BUY_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 889750,
+        "token_confirmation_idx": 0,
+        "amount_idx": -1
+    },
+    {
+        "name": "BPA S 1.2K",
+        "price": "Rp1200",
+        "detail": "Supported payment: E-wallet & QRIS",
+        "packages": [
+            {
+                "family_name": "Akrab",
+                "family_code": "6a838c0b-8f01-42e4-847c-2c0715ca248d",
+                "is_enterprise": false,
+                "migration_type": "PRIOH_TO_PRIO",
+                "variant_code": "df7e6687-ee39-472b-9823-afe0e67a5ac3",
+                "option_name": "Akrab",
+                "order": 31
+            },
+            {
+                "family_name": "Night Quota",
+                "family_code": "64e63f53-6889-4d12-a0b4-ef9ea77b9efc",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "7a0c3e7e-d5b7-480a-b161-50301a9dcdfd",
+                "option_name": "EWALLET 1.2k",
+                "order": 1
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 1200,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    },
+    {
+        "name": "BPA S 1K",
+        "price": "Rp1000",
+        "detail": "Supported payment: E-wallet & QRIS",
+        "packages": [
+            {
+                "family_name": "Akrab",
+                "family_code": "6a838c0b-8f01-42e4-847c-2c0715ca248d",
+                "is_enterprise": false,
+                "migration_type": "PRIOH_TO_PRIO",
+                "variant_code": "df7e6687-ee39-472b-9823-afe0e67a5ac3",
+                "option_name": "Akrab",
+                "order": 31
+            },
+            {
+                "family_name": "Apps Quota Xtra Combo Plus 2GB",
+                "family_code": "580c1f94-7dc4-416e-96f6-8faf26567516",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "b50f954a-696e-46d0-8700-8e4d38521525",
+                "option_name": "EWALLET & QRIS 1K",
+                "order": 24
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 1000,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    },
+    {
+        "name": "BPA + Add-on XCP Tiktok 15Gb",
+        "price": "Rp5000",
+        "detail": "Khusus XCP,Tanpa XCP Paket 15Gb Hangus",
+        "packages": [
+            {
+                "family_name": "Akrab",
+                "family_code": "6a838c0b-8f01-42e4-847c-2c0715ca248d",
+                "is_enterprise": false,
+                "migration_type": "PRIOH_TO_PRIO",
+                "variant_code": "df7e6687-ee39-472b-9823-afe0e67a5ac3",
+                "option_name": "Akrab",
+                "order": 31
+            },
+            {
+                "family_name": "Bonus Kuota 15GB",
+                "family_code": "864d43cb-7f32-46ad-aed5-6e199fad851f",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "6f0b93a2-a591-4b7b-bc40-367e08dfa6fb",
+                "option_name": "EWALLET & QRIS 5K",
+                "order": 7
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 5000,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    },
+    {
+        "name": "BPA + Add-on XCP IG 15Gb",
+        "price": "Rp5000",
+        "detail": "Khusus XCP,Tanpa XCP Paket 15Gb Hangus",
+        "packages": [
+            {
+                "family_name": "Akrab",
+                "family_code": "6a838c0b-8f01-42e4-847c-2c0715ca248d",
+                "is_enterprise": false,
+                "migration_type": "PRIOH_TO_PRIO",
+                "variant_code": "df7e6687-ee39-472b-9823-afe0e67a5ac3",
+                "option_name": "Akrab",
+                "order": 31
+            },
+            {
+                "family_name": "Bonus Kuota 15GB",
+                "family_code": "864d43cb-7f32-46ad-aed5-6e199fad851f",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "6f0b93a2-a591-4b7b-bc40-367e08dfa6fb",
+                "option_name": "EWALLET & QRIS 5K",
+                "order": 4
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 5000,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    },
+    {
+        "name": "Call of Duty + Unlimited 3Hari",
+        "price": "Rp7500",
+        "detail": "\nUnlimited Call of Duty FUP 60GB.\nSupported payment: E-wallet & QRIS.",
+        "packages": [
+            {
+                "family_name": "Xtra Unlimited Turbo Plus",
+                "family_code": "9cd2f58c-c64d-43df-9e6f-225a6461951d",
+                "is_enterprise": false,
+                "migration_type": "NONE",
+                "variant_code": "8035fc91-a61e-40ef-8b57-37f98896fb0f",
+                "option_name": "Call of Duty",
+                "order": 4
+            },
+            {
+                "family_name": "QRIS D 0",
+                "family_code": "c6f2cd72-8b21-420a-b8d5-e0186afe5be6",
+                "is_enterprise": true,
+                "migration_type": "NONE",
+                "variant_code": "b7cf278e-c989-4760-8a26-0a20c1a47a40",
+                "option_name": "QRIS D 0",
+                "order": 11
+            }
+        ],
+        "payment_for": "SHARE_PACKAGE",
+        "ask_overwrite": false,
+        "overwrite_amount": 7500,
+        "token_confirmation_idx": 1,
+        "amount_idx": -1
+    }
+]
