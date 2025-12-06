@@ -114,13 +114,13 @@ def show_account_menu():
                 sub_type = (user.get("subscription_type") or "").center(12)
                 print(f" {idx + 1}. {padded_number} [{sub_type}] {active_marker}")
 
-        print("-" * WIDTH)
+        print("=" * WIDTH)
         print("Command:")
-        print(" **0:** Tambah akun baru")
-        print(" **<nomor urut>:** Ganti ke akun pilihan")
-        print(" **del <nomor urut>:** Hapus akun tertentu")
-        print(" **00:** Kembali ke menu utama")
-        print("-" * WIDTH)
+        print("  [0.] Tambah akun baru")
+        print(" Masukan nomor urut akun untuk berganti.")
+        print(" del <nomor urut> Hapus akun tertentu.")
+        print(" [00.] Kembali ke menu utama")
+        print("=" * WIDTH)
 
         input_str = input("Pilihan: ").strip()
 
