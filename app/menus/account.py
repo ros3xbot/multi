@@ -2,6 +2,7 @@ from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 from app2.menus.account import verif_tele
+
 WIDTH = 55
 
 
