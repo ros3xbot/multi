@@ -371,7 +371,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             price=price,
             item_name=variant_name
         )
-        print_panel("✅ Mantap", "Bonus berhasil diambil bro 🎁")
+        #print_panel("✅ Mantap", "Bonus berhasil diambil bro 🎁")
         pause()
         return True
 
@@ -386,7 +386,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             item_code=package_option_code,
             token_confirmation=token_confirmation,
         )
-        print_panel("✅ Mantap", "Bonus berhasil dikirim bro 🎁")
+        #print_panel("✅ Mantap", "Bonus berhasil dikirim bro 🎁")
         pause()
         return True
 
@@ -399,7 +399,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             payment_target=package_option_code,
             price=price,
         )
-        print_panel("✅ Mantap", "Pembelian pake poin sukses bro ⭐")
+        #print_panel("✅ Mantap", "Pembelian pake poin sukses bro ⭐")
         pause()
         return True
 
