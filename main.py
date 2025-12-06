@@ -139,13 +139,13 @@ def git_pull_rebase():
 def run_menu():
     text = Text.from_markup(
         f"[bold {get_theme_style('text_title')}]Pilih Mode CLI[/]\n\n"
-        f"[{get_theme_style('text_body')}][1.] Mode (Default)[/]\n"
-        f"[{get_theme_style('text_body')}][2.] Mode (Minimal)[/]\n"
-        f"[{get_theme_style('text_body')}][3.] Mode (Full-emoji)[/]\n"
+        f"[{get_theme_style('text_body')}][1.] Standard (Default)[/]\n"
+        f"[{get_theme_style('text_body')}][2.] Formal (Minimalis)[/]\n"
+        f"[{get_theme_style('text_body')}][3.] Tongkrongan (Full-emoji)[/]\n"
     )
     console.print(Panel(
         text,
-        title=f"[{get_theme_style('text_title')}]Menu[/]",
+        #title=f"[{get_theme_style('text_title')}]Menu[/]",
         border_style=get_theme_style("border_info"),
         padding=(0, 2),
         expand=True
