@@ -1,10 +1,9 @@
 import os
 import json
 import time
-from app2.client.ciam import get_new_token
-from app2.client.engsel import get_profile
-from app2.util import ensure_api_key
-from app2.service.service import load_status
+from app3.client.ciam import get_new_token
+from app3.client.engsel import get_profile
+from app3.util import ensure_api_key
 
 
 class Auth:
@@ -39,28 +38,14 @@ class Auth:
         with open("refresh-tokens.json", "r", encoding="utf-8") as f:
             refresh_tokens = json.load(f)
 
-        # cek status unlock
-        status = load_status()
-        is_unlocked = status.get("is_unlocked", False)
+            if len(refresh_tokens) != 0:
+                self.refresh_tokens = []
 
-        if not is_unlocked and len(refresh_tokens) > 2:
-            print("🚫 Belum unlock, hanya 2 akun pertama yang bisa dipakai.")
-            refresh_tokens = refresh_tokens[:2]
-
-        self.refresh_tokens = []
-        for rt in refresh_tokens:
-            if "number" in rt and "refresh_token" in rt:
-                self.refresh_tokens.append(rt)
+            for rt in refresh_tokens:
+                if "number" in rt and "refresh_token" in rt:
+                    self.refresh_tokens.append(rt)
 
     def add_refresh_token(self, number: int, refresh_token: str):
-        status = load_status()
-        is_unlocked = status.get("is_unlocked", False)
-
-        # proteksi penambahan akun
-        if not is_unlocked and len(self.refresh_tokens) >= 2:
-            print("🚫 Belum unlock, maksimal 2 akun.")
-            return
-
         existing = next((rt for rt in self.refresh_tokens if rt["number"] == number), None)
         if existing:
             existing["refresh_token"] = refresh_token
