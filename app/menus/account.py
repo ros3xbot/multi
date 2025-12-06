@@ -117,8 +117,8 @@ def show_account_menu():
         print("-" * WIDTH)
         print("Command:")
         print(" [0.] Tambah akun baru")
-        print("      Masukan nomor urut akun untuk berganti.")
-        print("      del <nomor urut> Hapus akun tertentu.")
+        print(" Masukan nomor urut akun untuk berganti.")
+        print(" del <nomor urut>  untuk menghapus akun tertentu.")
         print("[00.] Kembali ke menu utama")
         print("=" * WIDTH)
 
