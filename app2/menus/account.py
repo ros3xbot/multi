@@ -105,7 +105,7 @@ def show_account_menu():
 
         if active_user is None or add_user:
             if not is_verif and len(users) >= sumit_otp:
-                print_panel("Limit Akun", "Jumlah akun sudah penuh, masukkan kode unlock untuk menambah banyak akun.")
+                print_panel("Limit Akun", "Jumlah akun sudah penuh, masukkan kode unlock untuk menambah akun.")
                 verif_input = console.input("Kode Unlock: ").strip()
                 if verif_input != verif_otp:
                     print_panel("Kesalahan", "Kode unlock salah, tidak dapat menambah akun.")
