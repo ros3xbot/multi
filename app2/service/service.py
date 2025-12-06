@@ -33,9 +33,17 @@ def load_status():
     except Exception:
         return {"is_unlocked": False}
 
-def save_status(status: bool):
+#def save_status(status: bool):
+#    try:
+#        encoded = encrypt_base64({"is_unlocked": status})
+#        with open(is_anu, "w") as f:
+#            f.write(encoded)
+#    except Exception:
+#        pass
+
+def save_status(is_unlocked: bool):
     try:
-        encoded = encrypt_base64({"is_unlocked": status})
+        encoded = encrypt_base64({"is_unlocked": is_unlocked})
         with open(is_anu, "w") as f:
             f.write(encoded)
     except Exception:
