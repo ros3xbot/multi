@@ -3,7 +3,7 @@ import json
 import time
 from app2.client.ciam import get_new_token
 from app2.client.engsel import get_profile
-from app2.util import ensure_api_key
+from app.util import ensure_api_key
 
 
 class Auth:
