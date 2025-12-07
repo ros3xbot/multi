@@ -20,14 +20,14 @@ from app.config.theme_config import get_theme, get_theme_style, get_all_presets,
 
 # Internal app - client
 #from app.client.engsel import (
-    dash_segments,
-    get_balance,
-    get_family,
-    get_package,
-    get_package_details,
-    get_quota,
-    get_tiering_info,
-)
+#    dash_segments,
+#    get_balance,
+#    get_family,
+#    get_package,
+#    get_package_details,
+#    get_quota,
+#    get_tiering_info,
+#)
 #from app.client.famplan import validate_msisdn
 #from app.client.registration import dukcapil
 
@@ -49,10 +49,10 @@ from app.config.theme_config import get_theme, get_theme_style, get_all_presets,
 #from app.menus.info import show_info_menu
 #from app.menus.notification import show_notification_menu
 #from app.menus.package import (
-    fetch_my_packages,
-    get_packages_by_family,
-    show_package_details,
-)
+#    fetch_my_packages,
+#    get_packages_by_family,
+#    show_package_details,
+#)
 #from app.menus.payment import show_transaction_history
 #from app.menus.purchase import purchase_by_family, purchase_loop
 #from app.menus.sfy import show_special_for_you_menu
