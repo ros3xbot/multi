@@ -2,7 +2,7 @@ import time
 import json
 
 from app2.client.engsel import get_package_details
-from app2.service.auth import AuthInstance
+from app.service.auth import AuthInstance
 
 
 class DecoyPackage:
