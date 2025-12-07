@@ -7,7 +7,7 @@ from datetime import datetime
 from time import sleep
 
 from app2.client.engsel import send_api_request
-from app2.service.auth import AuthInstance
+from app.service.auth import AuthInstance
 
 
 def enter_sentry_mode():
