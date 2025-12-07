@@ -1,5 +1,6 @@
 import base64
 import requests
+import json
 from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
