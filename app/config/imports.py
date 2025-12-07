@@ -32,11 +32,11 @@ from app.config.theme_config import get_theme, get_theme_style, get_all_presets,
 #from app.client.registration import dukcapil
 
 # Internal app - service
-#from app.service.auth import AuthInstance
-#from app.service.bookmark import BookmarkInstance
-#from app.service.decoy import DecoyInstance
-#from app.service.git import check_for_updates, ensure_git
-#from app.service.sentry import enter_sentry_mode
+from app.service.auth import AuthInstance
+from app.service.bookmark import BookmarkInstance
+from app.service.decoy import DecoyInstance
+from app.service.git import check_for_updates, ensure_git
+from app.service.sentry import enter_sentry_mode
 
 # Internal app - menus
 #from app.menus.account import show_account_menu
@@ -104,17 +104,6 @@ __all__ = [
     "get_all_presets",
     "set_theme",
 
-    # Client
-    "dash_segments",
-    "get_balance",
-    "get_family",
-    "get_package",
-    "get_package_details",
-    "get_quota",
-    "get_tiering_info",
-    "validate_msisdn",
-    "dukcapil",
-
     # Service
     "AuthInstance",
     "BookmarkInstance",
@@ -122,30 +111,6 @@ __all__ = [
     "check_for_updates",
     "ensure_git",
     "enter_sentry_mode",
-
-    # Menus
-    "show_account_menu",
-    "show_bookmark_menu",
-    "show_bundle_menu",
-    "show_circle_info",
-    "show_family_grup_menu",
-    "show_family_info",
-    "show_hot_menu",
-    "show_hot_menu2",
-    "show_info_menu",
-    "show_notification_menu",
-    "fetch_my_packages",
-    "get_packages_by_family",
-    "show_package_details",
-    "show_transaction_history",
-    "purchase_by_family",
-    "purchase_loop",
-    "show_special_for_you_menu",
-    "show_redeemables_menu",
-    "show_family_list_menu",
-    "show_store_packages_menu",
-    "show_store_segments_menu",
-    "show_theme_menu",
 
     # Util
     "clear_screen",
