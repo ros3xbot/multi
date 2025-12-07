@@ -64,7 +64,7 @@ def login_prompt(api_key: str):
                 continue
 
             print("✅ Berhasil login! Gas langsung dipake.")
-            enc_json()
+            enc_json(encrypt, ipass)
             return phone_number, tokens.get("refresh_token")
 
         print("💥 Gagal login setelah beberapa percobaan. Coba lagi nanti ya.")
@@ -176,7 +176,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            enc_json()
+            enc_json(encrypt, ipass)
             return selected_user.get("number")
 
         elif input_str.lower().startswith("del "):
