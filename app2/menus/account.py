@@ -66,7 +66,7 @@ def login_prompt(api_key: str):
             tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if tokens:
                 print_panel("Berhasil", f"Login berhasil. Nomor: {phone_number}")
-                enc_json(encrypt, ipass)
+                enc_json()
                 return phone_number, tokens["refresh_token"]
             else:
                 print_panel("Kesalahan", "OTP salah atau kadaluarsa, silakan coba lagi.")
@@ -235,7 +235,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            enc_json(encrypt, ipass)
+            enc_json()
             return selected_user["number"]
         
         else:
