@@ -15,7 +15,7 @@ from rich.table import Table
 from rich.text import Text
 
 # Internal app - config
-from app2.config.cache import clear_cache, get_cache, set_cache
+from app.config.cache import clear_cache, get_cache, set_cache
 from app2.config.theme_config import get_theme, get_theme_style, get_all_presets, set_theme
 
 # Internal app - client
