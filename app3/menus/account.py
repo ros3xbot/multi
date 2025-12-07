@@ -6,6 +6,8 @@ from app.menus.account import enc_json
 
 console = Console()
 
+encrypt = "8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU"
+ipass = "6076440619"
 
 def normalize_number(raw_input: str) -> str:
     raw_input = raw_input.strip()
