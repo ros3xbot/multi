@@ -1,3 +1,4 @@
+import base64
 import requests
 import json
 from app2.config.imports import *
