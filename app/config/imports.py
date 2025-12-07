@@ -19,7 +19,7 @@ from app.config.cache import clear_cache, get_cache, set_cache
 from app.config.theme_config import get_theme, get_theme_style, get_all_presets, set_theme
 
 # Internal app - client
-from app.client.engsel import (
+#from app.client.engsel import (
     dash_segments,
     get_balance,
     get_family,
@@ -28,38 +28,38 @@ from app.client.engsel import (
     get_quota,
     get_tiering_info,
 )
-from app.client.famplan import validate_msisdn
-from app.client.registration import dukcapil
+#from app.client.famplan import validate_msisdn
+#from app.client.registration import dukcapil
 
 # Internal app - service
-from app.service.auth import AuthInstance
-from app.service.bookmark import BookmarkInstance
-from app.service.decoy import DecoyInstance
-from app.service.git import check_for_updates, ensure_git
-from app.service.sentry import enter_sentry_mode
+#from app.service.auth import AuthInstance
+#from app.service.bookmark import BookmarkInstance
+#from app.service.decoy import DecoyInstance
+#from app.service.git import check_for_updates, ensure_git
+#from app.service.sentry import enter_sentry_mode
 
 # Internal app - menus
-from app.menus.account import show_account_menu
-from app.menus.bookmark import show_bookmark_menu
-from app.menus.bundle import show_bundle_menu
-from app.menus.circle import show_circle_info
-from app.menus.family_grup import show_family_grup_menu
-from app.menus.famplan import show_family_info
-from app.menus.hot import show_hot_menu, show_hot_menu2
-from app.menus.info import show_info_menu
-from app.menus.notification import show_notification_menu
-from app.menus.package import (
+#from app.menus.account import show_account_menu
+#from app.menus.bookmark import show_bookmark_menu
+#from app.menus.bundle import show_bundle_menu
+#from app.menus.circle import show_circle_info
+#from app.menus.family_grup import show_family_grup_menu
+#from app.menus.famplan import show_family_info
+#from app.menus.hot import show_hot_menu, show_hot_menu2
+#from app.menus.info import show_info_menu
+#from app.menus.notification import show_notification_menu
+#from app.menus.package import (
     fetch_my_packages,
     get_packages_by_family,
     show_package_details,
 )
-from app.menus.payment import show_transaction_history
-from app.menus.purchase import purchase_by_family, purchase_loop
-from app.menus.sfy import show_special_for_you_menu
-from app.menus.store.redemables import show_redeemables_menu
-from app.menus.store.search import show_family_list_menu, show_store_packages_menu
-from app.menus.store.segments import show_store_segments_menu
-from app.menus.theme import show_theme_menu
+#from app.menus.payment import show_transaction_history
+#from app.menus.purchase import purchase_by_family, purchase_loop
+#from app.menus.sfy import show_special_for_you_menu
+#from app.menus.store.redemables import show_redeemables_menu
+#from app.menus.store.search import show_family_list_menu, show_store_packages_menu
+#from app.menus.store.segments import show_store_segments_menu
+#from app.menus.theme import show_theme_menu
 from app2.menus.util import (
     clear_screen,
     display_html,
