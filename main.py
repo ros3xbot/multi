@@ -4,7 +4,7 @@ load_dotenv()
 import subprocess
 import sys
 import os
-from app2.config.imports import *
+from app.config.imports import *
 
 
 def is_rebase_in_progress():
