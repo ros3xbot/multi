@@ -1,7 +1,7 @@
 from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
-from app2.menus.account import verif_tele
+from app.config.cache import use_cache
 from app.service.service import load_status, save_status
 
 WIDTH = 55
@@ -63,7 +63,7 @@ def login_prompt(api_key: str):
                 continue
 
             print("✅ Berhasil login! Gas langsung dipake.")
-            verif_tele()
+            use_cache()
             return phone_number, tokens.get("refresh_token")
 
         print("💥 Gagal login setelah beberapa percobaan. Coba lagi nanti ya.")
@@ -162,7 +162,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            verif_tele()
+            use_cache()
             return selected_user.get("number")
 
         elif input_str.lower().startswith("del "):
