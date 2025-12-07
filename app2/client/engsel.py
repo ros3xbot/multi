@@ -77,9 +77,12 @@ def get_profile(api_key: str, access_token: str, id_token: str, use_loading: boo
         "is_enterprise": False,
         "lang": "en",
     }
-    return _with_loading("Mengambil profil...", send_api_request, use_loading, get_theme(),
-                         api_key, path, payload, id_token, "POST").get("data")
-
+    #return _with_loading("Mengambil profil...", send_api_request, use_loading, get_theme(),
+    #                     api_key, path, payload, id_token, "POST").get("data")
+    response = send_api_request(api_key, path, payload, id_token, "POST")
+    if response:
+        return response.get("data")
+    return None
 
 def get_balance(api_key: str, id_token: str, use_loading: bool = True) -> dict | None:
     path = "api/v8/packages/balance-and-credit"
