@@ -49,7 +49,7 @@ def print_banner():
 
 
 def simple_number():
-    from app3.service.auth import AuthInstance
+    from app.service.auth import AuthInstance
     theme = get_theme()
     active_user = AuthInstance.get_active_user()
 
