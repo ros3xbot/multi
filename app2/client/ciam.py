@@ -178,12 +178,12 @@ def get_new_token(api_key: str, refresh_token: str, subscriber_id: str) -> dict 
     }
     data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
 
-    with live_loading("Refresh token...", get_theme()):
-        try:
-            resp = requests.post(url, headers=headers, data=data, timeout=30)
-        except requests.RequestException:
-            print_panel("Kesalahan", "Terjadi error saat refresh token.")
-            return None
+    #with live_loading("Refresh token...", get_theme()):
+    try:
+        resp = requests.post(url, headers=headers, data=data, timeout=30)
+    except requests.RequestException:
+        print_panel("Kesalahan", "Terjadi error saat refresh token.")
+        return None
 
     if resp.status_code == 400:
         try:
