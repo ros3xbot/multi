@@ -87,7 +87,7 @@ def print_banner():
 
 def simple_number():
     """Display active account number or information if none is active."""
-    from app2.service.auth import AuthInstance
+    from app.service.auth import AuthInstance
     theme = get_theme()
     active_user = AuthInstance.get_active_user()
 
