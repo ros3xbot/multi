@@ -2,7 +2,7 @@ from app3.config.imports import *
 from app3.client.ciam import get_otp, submit_otp
 from app.service.service import load_status, save_status
 from app3.menus.util import clear_screenx, simple_number, pause, print_panel, nav_range
-from app.config.cache import use_cache
+from app.menus.account import enc_json
 
 console = Console()
 
@@ -55,7 +55,7 @@ def login_prompt(api_key: str):
             tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if tokens:
                 print_panel("✅ Sukses", f"Login berhasil cuy! Nomor: {phone_number}")
-                use_cache()
+                enc_json()
                 return phone_number, tokens["refresh_token"]
             else:
                 print_panel("⚠️ Ups", "OTP salah atau kadaluarsa, coba lagi bro 🚨")
@@ -224,7 +224,7 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             AuthInstance.set_active_user(selected_user["number"])
-            use_cache()
+            enc_json()
             return selected_user["number"]
         
         else:
