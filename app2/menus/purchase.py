@@ -20,104 +20,69 @@ from app2.client.purchase.redeem import settlement_bounty
 console = Console()
 
 
-def redeem_all_by_family(
-    family_code: str,
+def redeem_all_visible(
     pause_on_success: bool = True,
     delay_seconds: int = 0,
-    start_from_option: int = 1,
 ):
     theme = get_theme()
     ensure_git()
-    active_user = AuthInstance.get_active_user()
     api_key = AuthInstance.api_key
     tokens: dict = AuthInstance.get_active_tokens() or {}
 
-    family_data = get_family(api_key, tokens, family_code)
-    if not family_data:
-        print_panel("Peringatan", f"Gagal mengambil data family untuk kode: {family_code}")
+    redeemables_res = get_redeemables(api_key, tokens, False)
+    if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
+        print_panel("Informasi", "Tidak ada redeemables tersedia.")
         pause()
-        return None
+        return
 
-    family_name = family_data["package_family"]["name"]
-    variants = family_data["package_variants"]
+    categories = redeemables_res.get("data", {}).get("categories", [])
+    successful = []
 
-    console.rule()
-    successful_redeems = []
-    total_options = sum(len(v["package_options"]) for v in variants)
+    for cat in categories:
+        cat_name = cat.get("category_name", "-")
+        for r in cat.get("redeemables", []):
+            # hanya proses yang muncul di daftar redeemables
+            action_type = r.get("action_type")
+            action_param = r.get("action_param")
+            item_name = r.get("name", "N/A")
 
-    redeem_count = 0
-    start_redeeming = start_from_option <= 1
-
-    for variant in variants:
-        variant_name = variant["name"]
-        for option in variant["package_options"]:
-            tokens = AuthInstance.get_active_tokens()
-            option_order = option["order"]
-
-            if not start_redeeming and option_order == start_from_option:
-                start_redeeming = True
-            if not start_redeeming:
-                console.print(f"[{theme['text_sub']}]Lewati option {option_order}. {option['name']}[/]")
-                continue
-
-            option_name = option["name"]
-            option_price = option["price"]
-
-            redeem_count += 1
-            console.print(f"[{theme['text_title']}]Proses redeem {redeem_count} dari {total_options}[/]")
-            console.print(f"Claim bonus: {variant_name} - {option_order}. {option_name} - Rp{option_price}")
-
-            try:
-                target_package_detail = get_package_details(
-                    api_key,
-                    tokens,
-                    family_code,
-                    variant["package_variant_code"],
-                    option["order"],
-                    None,
-                    None,
-                )
-            except Exception as e:
-                print_panel("Kesalahan", f"Terjadi error saat ambil detail paket: {e}")
-                console.print(f"Gagal ambil detail untuk {variant_name} - {option_name}. Dilewati.")
-                continue
-
-            # settlement_bounty dipakai untuk redeem bonus
-            try:
+            if action_type == "PDP":
+                pkg = get_package(api_key, tokens, action_param)
+                if not pkg:
+                    continue
+                option = pkg.get("package_option", {}) or {}
                 res = settlement_bounty(
                     api_key=api_key,
                     tokens=tokens,
-                    token_confirmation=target_package_detail["token_confirmation"],
-                    ts_to_sign=target_package_detail["timestamp"],
-                    payment_target=target_package_detail["package_option"]["package_option_code"],
-                    price=target_package_detail["package_option"]["price"],
-                    item_name=target_package_detail["package_option"]["name"],
+                    token_confirmation=pkg.get("token_confirmation", ""),
+                    ts_to_sign=pkg.get("timestamp", ""),
+                    payment_target=action_param,
+                    price=option.get("price", 0),
+                    item_name=item_name,
                 )
+            elif action_type == "PLP":
+                # langsung claim family yang muncul, jangan loop semua option
+                res = redeem_all_by_family(action_param, pause_on_success, delay_seconds, 1)
+            else:
+                continue
 
-                if res and res.get("status", "") == "SUCCESS":
-                    successful_redeems.append(f"{variant_name}|{option_order}. {option_name} - Rp{option_price}")
-                    print_panel("Sukses", "Redeem berhasil")
-                    if pause_on_success:
-                        pause()
-                else:
-                    msg = res.get("message", "Tidak diketahui") if isinstance(res, dict) else "Error"
-                    print_panel("Kesalahan", f"Redeem gagal: {msg}")
+            status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
+            console.print(Panel(
+                f"{cat_name} → {item_name} → Status: {status}",
+                border_style=theme["border_info"],
+                expand=True
+            ))
+            if status == "SUCCESS":
+                successful.append(item_name)
 
-            except Exception as e:
-                print_panel("Kesalahan", f"Terjadi error saat redeem: {e}")
-
-            console.rule()
             if delay_seconds > 0:
                 delay_inline(delay_seconds)
 
-    console.print(f"[{theme['text_title']}]Family: {family_name}[/]")
-    console.print(f"Total berhasil: {len(successful_redeems)}")
-    if successful_redeems:
-        console.rule()
-        console.print("Daftar redeem sukses:")
-        for r in successful_redeems:
-            console.print(f"- {r}")
-    console.rule()
+    print_panel("Informasi", f"Selesai redeem. Total berhasil: {len(successful)}")
+    if successful:
+        console.print("Daftar sukses:")
+        for s in successful:
+            console.print(f"- {s}")
     pause()
 
 
