@@ -17,10 +17,11 @@ from app2.menus.util import (
 
 from app2.client.purchase.redeem import settlement_bounty
 #from app2.client.store.redeemables import get_redeemables
+from app2.menus.package import show_package_details, get_package_details
 
 console = Console()
 
-bonus_data = [
+bonus_bookmarks = [
     {
         "family_name": "Bonus Bebas Puas",
         "family_code": "7e5eb288-58a0-44d0-8002-b66bad210f21",
@@ -44,37 +45,54 @@ bonus_data = [
     }
 ]
 
-def redeem_looping(loop_count: int, pause_on_success=True):
+def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
     theme = get_theme()
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens() or {}
 
     for i in range(loop_count):
         console.rule()
-        console.print(f"[{theme['text_title']}]Looping ke-{i+1}/{loop_count}[/]")
+        console.print(f"[{theme['text_title']}]Redeem Bookmark Looping ke-{i+1}/{loop_count}[/]")
 
         successful = []
         failed = []
 
-        for bonus in bonus_data:
-            family_code = bonus["family_code"]
-            order = bonus["order"]
-            option_name = bonus["option_name"]
+        for bm in bonus_bookmarks:
+            family_code = bm["family_code"]
+            order = bm["order"]
+            option_name = bm["option_name"]
 
-            console.print(f"Claim bonus: {bonus['variant_name']} - {order}. {option_name}")
+            console.print(f"Claim bonus: {bm['variant_name']} - {order}. {option_name}")
 
             try:
+                # Ambil family untuk dapat variant_code
+                family_data = get_family(api_key, tokens, family_code)
+                if not family_data:
+                    failed.append(option_name)
+                    print_panel("Kesalahan", f"Gagal ambil data family untuk {option_name}")
+                    continue
+
+                target_variant = None
+                for variant in family_data["package_variants"]:
+                    if variant["name"] == bm["variant_name"]:
+                        target_variant = variant
+                        break
+
+                if not target_variant:
+                    failed.append(option_name)
+                    print_panel("Kesalahan", f"Variant tidak ditemukan untuk {option_name}")
+                    continue
+
                 target_package_detail = get_package_details(
                     api_key,
                     tokens,
                     family_code,
-                    None,
+                    target_variant["package_variant_code"],
                     order,
                     None,
                     None,
                 )
 
-                # ✅ Validasi hasil
                 if not target_package_detail or "package_option" not in target_package_detail:
                     failed.append(option_name)
                     print_panel("Kesalahan", f"Detail paket tidak ditemukan untuk {option_name}")
@@ -123,7 +141,6 @@ def redeem_looping(loop_count: int, pause_on_success=True):
         if i < loop_count - 1:
             console.print(f"[{theme['text_sub']}]Tunggu 10 menit sebelum looping berikutnya...[/]")
             delay_inline(600)
-
 
 def purchase_loop(
     family_code: str,
