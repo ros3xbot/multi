@@ -20,11 +20,11 @@ def show_bookmark_menu():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print_header("⭐ Bookmark Paket")
+        print_header("Bookmark Paket")
         bookmarks = BookmarkInstance.get_bookmarks()
 
         if not bookmarks or len(bookmarks) == 0:
-            print("⚠️ Belum ada bookmark tersimpan bro.")
+            print("Belum ada bookmark tersimpan.")
             pause()
             return None
 
@@ -32,9 +32,9 @@ def show_bookmark_menu():
             print(f" {idx + 1}. {bm['family_name']} - {bm['variant_name']} - {bm['option_name']}")
 
         print("-" * WIDTH)
-        print("Command:")
-        print(" **00:** Kembali ke menu utama")
-        print(" **000:** Hapus bookmark tertentu")
+        print("Perintah:")
+        print(" [00] Kembali ke menu utama")
+        print(" [000] Hapus bookmark tertentu")
         print("-" * WIDTH)
 
         choice = input("Pilih bookmark (nomor): ").strip()
@@ -44,7 +44,7 @@ def show_bookmark_menu():
             return None
 
         elif choice == "000":
-            del_choice = input("Masukin nomor bookmark yang mau dihapus: ").strip()
+            del_choice = input("Masukkan nomor bookmark yang ingin dihapus: ").strip()
             if del_choice.isdigit() and 1 <= int(del_choice) <= len(bookmarks):
                 del_bm = bookmarks[int(del_choice) - 1]
                 BookmarkInstance.remove_bookmark(
@@ -53,11 +53,11 @@ def show_bookmark_menu():
                     del_bm["variant_name"],
                     del_bm["order"],
                 )
-                print(f"🗑️ Bookmark {del_bm['option_name']} berhasil dihapus bro.")
-                pause("☕ Tekan Enter biar lanjut...")
+                print(f"Bookmark {del_bm['option_name']} berhasil dihapus.")
+                pause()
             else:
-                print("⚠️ Input nggak valid bro. Coba lagi ✌️")
-                pause("☕ Tekan Enter biar lanjut...")
+                print("Input tidak valid. Silakan coba lagi.")
+                pause()
             continue
 
         elif choice.isdigit() and 1 <= int(choice) <= len(bookmarks):
@@ -67,8 +67,8 @@ def show_bookmark_menu():
 
             family_data = get_family(api_key, tokens, family_code, is_enterprise)
             if not family_data:
-                print("💥 Gagal ambil data family bro.")
-                pause("☕ Tekan Enter biar lanjut...")
+                print("Gagal mengambil data paket.")
+                pause()
                 continue
 
             package_variants = family_data.get("package_variants", [])
@@ -82,13 +82,13 @@ def show_bookmark_menu():
                             break
 
             if option_code:
-                print(f"🎯 Option code: {option_code}")
+                print(f"Option code: {option_code}")
                 show_package_details(api_key, tokens, option_code, is_enterprise)
             else:
-                print("⚠️ Option code nggak ketemu bro.")
-                pause("☕ Tekan Enter biar lanjut...")
+                print("Option code tidak ditemukan.")
+                pause()
 
         else:
-            print("⚠️ Input nggak valid bro. Coba lagi ✌️")
-            pause("☕ Tekan Enter biar lanjut...")
+            print("Input tidak valid. Silakan coba lagi.")
+            pause()
             continue
