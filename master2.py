@@ -6,7 +6,7 @@ from datetime import datetime
 from app2.config.imports import *
 from app2.menus.util import clear_screenx
 from app2.menus.sharing import show_balance_allotment_menu
-
+from app2.menus.purchase import redeem_all_by_family
 
 def show_main_menu(profile: dict, display_quota: str, segments: dict):
     clear_screenx()
@@ -79,6 +79,7 @@ def show_main_menu(profile: dict, display_quota: str, segments: dict):
     menu_table.add_row("7", "💵 Beli paket via Family Code")
     menu_table.add_row("8", "🛒 Beli semua paket di Family Code")
     menu_table.add_row("9", "🔂 Auto Loop target Paket by Family")
+    menu_table.add_row("10", "reedem all")
     menu_table.add_row("", "")
     menu_table.add_row("[D]", "🎭 Buat bundle paket decoy")
     menu_table.add_row("[F]", "💾 Simpan/Kelola Family Code")
@@ -325,6 +326,15 @@ def main():
                     if not should_continue:
                         break
                 continue
+
+            elif choice == "10":
+                family_code = console.input("Masukkan family code: ")
+                start_from_option = int(console.input("Mulai dari option number (default 1): ") or 1)
+                pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
+                delay_seconds = int(console.input("Delay antar redeem (0 = tanpa delay): ") or 0)
+                redeem_all_by_family(family_code, pause_on_success, delay_seconds, start_from_option)
+                        
+
             elif choice.lower() == "d":
                 show_bundle_menu()
             elif choice.lower() == "f":
