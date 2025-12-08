@@ -1,11 +1,37 @@
 from app2.client.store.redeemables import get_redeemables
 from app.service.auth import AuthInstance
 from app2.menus.util import clear_screen, pause, print_panel, simple_number, delay_inline
-from app2.menus.package import show_package_details, get_packages_by_family, get_package
+from app2.menus.package import show_package_details, get_package  # penting: jangan pakai get_packages_by_family (interaktif)
 from app2.config.imports import *
 from datetime import datetime
 
 console = Console()
+
+
+import json
+from app3.client.engsel import send_api_request
+from app3.config.theme_config import get_theme
+from app3.menus.util import live_loading, print_panel
+
+def fetch_family_packages_data(api_key: str, tokens: dict, family_code: str, is_enterprise: bool = False) -> list[dict]:
+    """
+    Mengambil data paket dalam sebuah family secara NON-INTERAKTIF.
+    Return: list[dict] paket (tiap dict memuat package_family, package_options, dst.)
+    """
+    path = f"api/v8/store/packages/family/{family_code}"
+    payload = {"is_enterprise": is_enterprise, "lang": "en"}
+
+    with live_loading(f"📦 Ambil paket family {family_code}...", get_theme()):
+        res = send_api_request(api_key, path, payload, tokens["id_token"], "POST")
+
+    if not res or res.get("status") != "SUCCESS":
+        print_panel("⚠️ Ups", f"Gagal ambil paket family {family_code}")
+        return []
+
+    # Struktur hasil biasanya: {"status":"SUCCESS","data":{"packages":[...]}}
+    packages = res.get("data", {}).get("packages", [])
+    return packages or []
+
 
 
 def show_redeemables_menu(is_enterprise: bool = False):
@@ -76,7 +102,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
         nav.add_column(justify="right", style=theme["text_key"], width=6)
         nav.add_column(style=theme["text_body"])
         nav.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
-        nav.add_row("99", "Redeem semua bonus (pilih kategori)")  # tambahan menu baru
+        nav.add_row("99", "Redeem semua bonus (pilih kategori)")
         
         console.print(Panel(nav, border_style=theme["border_primary"], expand=True))
         
@@ -86,6 +112,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
             continue
 
         if choice == "99":
+            # Ambil kategori di MENU UTAMA agar tidak bentrok dengan input loop
             cat_choice = console.input("Masukkan kode kategori (misal A, B, C): ").strip().upper()
             show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterprise)
             pause()
@@ -101,6 +128,8 @@ def show_redeemables_menu(is_enterprise: bool = False):
         action_type = selected_pkg["action_type"]
         
         if action_type == "PLP":
+            # Ini interaktif: dipakai hanya untuk navigasi manual
+            from app2.menus.package import get_packages_by_family  # jika memang perlu tetap ada di menu biasa
             get_packages_by_family(action_param, is_enterprise, "")
         elif action_type == "PDP":
             show_package_details(api_key, tokens, action_param, is_enterprise)
@@ -110,6 +139,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
 
 
 def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterprise: bool = False):
+    """Redeem semua bonus dari kategori tertentu (A, B, C dst) secara NON-INTERAKTIF."""
     theme = get_theme()
     clear_screen()
 
@@ -123,45 +153,55 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
     redeemables = category.get("redeemables", [])
 
     candidates = []
+    # Kumpulkan kandidat bonus dari PDP dan PLP (PLP di-expand NON-INTERAKTIF)
     for r in redeemables:
-        if r.get("action_type") == "PDP":
-            pkg = get_package(api_key, tokens, r.get("action_param"))
-            if isinstance(pkg, dict):
+        action_type = r.get("action_type")
+        action_param = r.get("action_param")
+
+        if action_type == "PDP":
+            pkg = get_package(api_key, tokens, action_param)
+            if not isinstance(pkg, dict):
+                continue
+            family = pkg.get("package_family", {}) or {}
+            if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
+                option = pkg.get("package_option", {}) or {}
+                variant = pkg.get("package_detail_variant", {}) or {}
+                candidates.append({
+                    "option_code": action_param,  # PDP: ini biasanya option code
+                    "token_confirmation": pkg.get("token_confirmation", ""),
+                    "ts_to_sign": pkg.get("timestamp", ""),
+                    "price": option.get("price", 0),
+                    "item_name": variant.get("name", "") or option.get("name", ""),
+                    "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
+                })
+
+        elif action_type == "PLP":
+            family_pkgs = fetch_family_packages_data(api_key, tokens, action_param, is_enterprise)
+            for pkg in family_pkgs or []:
+                if not isinstance(pkg, dict):
+                    continue
                 family = pkg.get("package_family", {}) or {}
-                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                    option = pkg.get("package_option", {}) or {}
-                    variant = pkg.get("package_detail_variant", {}) or {}
+                if (family.get("payment_for") or "BUY_PACKAGE") != "REDEEM_VOUCHER":
+                    continue
+
+                options = pkg.get("package_options", []) or []
+                variant = pkg.get("package_detail_variant", {}) or {}
+                for option in options:
+                    # Penting: gunakan package_option_code sebagai payment_target
                     candidates.append({
-                        "option_code": r.get("action_param"),
+                        "option_code": option.get("package_option_code", ""),
                         "token_confirmation": pkg.get("token_confirmation", ""),
                         "ts_to_sign": pkg.get("timestamp", ""),
                         "price": option.get("price", 0),
                         "item_name": variant.get("name", "") or option.get("name", ""),
                         "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
                     })
-        elif r.get("action_type") == "PLP":
-            family_pkgs = get_packages_by_family(r.get("action_param"), is_enterprise, "")
-            for pkg in family_pkgs or []:
-                if not isinstance(pkg, dict):
-                    continue
-                family = pkg.get("package_family", {}) or {}
-                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                    for option in pkg.get("package_options", []) or []:
-                        variant = pkg.get("package_detail_variant", {}) or {}
-                        candidates.append({
-                            "option_code": option.get("package_option_code", ""),
-                            "token_confirmation": pkg.get("token_confirmation", ""),
-                            "ts_to_sign": pkg.get("timestamp", ""),
-                            "price": option.get("price", 0),
-                            "item_name": variant.get("name", "") or option.get("name", ""),
-                            "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
-                        })
 
     if not candidates:
         print_panel("Informasi", f"Tidak ada bonus di kategori {cat_choice} ({category_name}).")
         return
 
-    # preview
+    # Preview
     preview = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
     preview.add_column("Kode", style=theme["text_key"], width=6)
     preview.add_column("Nama", style=theme["text_body"])
@@ -175,19 +215,31 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
         print_panel("Informasi", "Proses dibatalkan.")
         return
 
-    delay_seconds = 10 * 60
+    delay_seconds = 10 * 60  # default 10 menit
     for j, c in enumerate(candidates, start=1):
         res = settlement_bounty(
             api_key=api_key,
             tokens=tokens,
             token_confirmation=c["token_confirmation"],
             ts_to_sign=c["ts_to_sign"],
-            payment_target=c["option_code"],
+            payment_target=c["option_code"],  # HARUS: package_option_code agar tidak minta input manual
             price=c["price"],
             item_name=c["item_name"]
         )
-        status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
-        print_panel("Informasi", f"Bonus {cat_choice}{j} → {c['title']} → status: {status}")
+
+        status = "Berhasil"
+        note = "-"
+        if isinstance(res, dict):
+            if res.get("status") != "SUCCESS":
+                status = "Gagal"
+                note = res.get("message", "Terjadi kesalahan.")
+
+        console.print(Panel(
+            f"Bonus {cat_choice}{j} → {c['title']} → Status: {status}\nKeterangan: {note}",
+            border_style=theme["border_info"],
+            expand=True
+        ))
+
         if j < len(candidates):
             delay_inline(delay_seconds)
 
