@@ -16,105 +16,107 @@ from app2.menus.util import (
 )
 
 from app2.client.purchase.redeem import settlement_bounty
-from app2.client.store.redeemables import get_redeemables
+#from app2.client.store.redeemables import get_redeemables
 
 console = Console()
 
+bonus_data = [
+    {
+        "family_name": "Bonus Bebas Puas",
+        "family_code": "7e5eb288-58a0-44d0-8002-b66bad210f21",
+        "variant_name": "Bonus Bebas Puas",
+        "option_name": "Kuota Youtube & Tiktok 3.13GB",
+        "order": 200
+    },
+    {
+        "family_name": "Bonus Bebas Puas",
+        "family_code": "7e5eb288-58a0-44d0-8002-b66bad210f21",
+        "variant_name": "Bonus Bebas Puas",
+        "option_name": "Kuota Utama 1.25GB",
+        "order": 201
+    },
+    {
+        "family_name": "Bonus Bebas Puas",
+        "family_code": "7e5eb288-58a0-44d0-8002-b66bad210f21",
+        "variant_name": "Bonus Bebas Puas",
+        "option_name": "Kuota Malam 3.75GB",
+        "order": 199
+    }
+]
 
-pending_redeems = []
-
-def redeem_all_visible(pause_on_success=True, delay_seconds=0):
+def redeem_looping(loop_count: int, pause_on_success=True):
     theme = get_theme()
     api_key = AuthInstance.api_key
-    tokens: dict = AuthInstance.get_active_tokens() or {}
+    tokens = AuthInstance.get_active_tokens() or {}
 
-    redeemables_res = get_redeemables(api_key, tokens, False)
-    if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
-        print_panel("Informasi", "Tidak ada redeemables tersedia.")
-        pause()
-        return
+    for i in range(loop_count):
+        console.rule()
+        console.print(f"[{theme['text_title']}]Looping ke-{i+1}/{loop_count}[/]")
 
-    categories = redeemables_res.get("data", {}).get("categories", [])
-    packages = {}
-    # tampilkan daftar redeemables
-    for i, cat in enumerate(categories):
-        letter = chr(65 + i)
-        for j, r in enumerate(cat.get("redeemables", [])):
-            code = f"{letter}{j+1}"
-            packages[code.lower()] = r
-            console.print(f"{code} → {r.get('name')} ({r.get('action_type')})")
+        successful = []
+        failed = []
 
-    choice = console.input("Pilih kode redeemable (misal A1): ").strip().lower()
-    selected = packages.get(choice)
-    if not selected:
-        print_panel("Kesalahan", "Pilihan tidak valid.")
-        return
+        for bonus in bonus_data:
+            family_code = bonus["family_code"]
+            order = bonus["order"]
+            option_name = bonus["option_name"]
 
-    action_type = selected.get("action_type")
-    action_param = selected.get("action_param")
-    item_name = selected.get("name", "N/A")
+            console.print(f"Claim bonus: {bonus['variant_name']} - {order}. {option_name}")
 
-    if action_type == "PDP":
-        pkg = get_package(api_key, tokens, action_param)
-        if not pkg:
-            print_panel("Kesalahan", "Gagal ambil detail paket.")
-            return
-        option = pkg.get("package_option", {}) or {}
-        console.print(f"Opsi paket: {option.get('name')} - Rp{get_rupiah(option.get('price',0))}")
-        confirm = console.input("Claim paket ini? (y/n): ").lower()
-        if confirm == "y":
-            res = settlement_bounty(
-                api_key=api_key,
-                tokens=tokens,
-                token_confirmation=pkg.get("token_confirmation", ""),
-                ts_to_sign=pkg.get("timestamp", ""),
-                payment_target=action_param,
-                price=option.get("price", 0),
-                item_name=item_name,
-            )
-            console.print(f"Status: {res.get('status')}")
+            try:
+                target_package_detail = get_package_details(
+                    api_key,
+                    tokens,
+                    family_code,
+                    None,
+                    order,
+                    None,
+                    None,
+                )
 
-    elif action_type == "PLP":
-        family_data = get_family(api_key, tokens, action_param)
-        if not family_data:
-            print_panel("Kesalahan", "Gagal ambil data family.")
-            return
+                res = settlement_bounty(
+                    api_key=api_key,
+                    tokens=tokens,
+                    token_confirmation=target_package_detail["token_confirmation"],
+                    ts_to_sign=target_package_detail["timestamp"],
+                    payment_target=target_package_detail["package_option"]["package_option_code"],
+                    price=target_package_detail["package_option"]["price"],
+                    item_name=target_package_detail["package_option"]["name"],
+                )
 
-        options = []
-        for v in family_data.get("package_variants", []):
-            for opt in v.get("package_options", []):
-                family = family_data.get("package_family", {}) or {}
-                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                    options.append(opt)
+                if res and res.get("status", "") == "SUCCESS":
+                    successful.append(option_name)
+                    print_panel("Sukses", f"Redeem berhasil: {option_name}")
+                    if pause_on_success:
+                        pause()
+                else:
+                    msg = res.get("message", "Tidak diketahui") if isinstance(res, dict) else "Error"
+                    failed.append(option_name)
+                    print_panel("Kesalahan", f"Redeem gagal: {msg}")
 
-        if not options:
-            print_panel("Informasi", "Tidak ada opsi redeemable di family ini.")
-            return
+            except Exception as e:
+                failed.append(option_name)
+                print_panel("Kesalahan", f"Error saat redeem {option_name}: {e}")
 
-        for opt in options:
-            console.print(f"{opt['order']} → {opt['name']} - Rp{get_rupiah(opt['price'])}")
-        order = int(console.input("Pilih order option: ") or options[0]["order"])
-        target_opt = next((o for o in options if o["order"] == order), None)
-        if not target_opt:
-            print_panel("Kesalahan", "Option tidak valid.")
-            return
+        # Summary panel per looping
+        console.rule()
+        summary_text = f"Selesai looping {i+1}/{loop_count}\n" \
+                       f"Berhasil: {len(successful)}\n" \
+                       f"Gagal: {len(failed)}"
+        console.print(Panel(summary_text, border_style=theme["border_info"]))
+        if successful:
+            console.print("Daftar sukses:")
+            for s in successful:
+                console.print(f"- {s}")
+        if failed:
+            console.print("Daftar gagal:")
+            for f in failed:
+                console.print(f"- {f}")
 
-        res = settlement_bounty(
-            api_key=api_key,
-            tokens=tokens,
-            token_confirmation=family_data.get("token_confirmation", ""),
-            ts_to_sign=family_data.get("timestamp", ""),
-            payment_target=target_opt["package_option_code"],
-            price=target_opt["price"],
-            item_name=target_opt["name"],
-        )
-        console.print(f"Status: {res.get('status')}")
-
-    else:
-        print_panel("Informasi", f"Tipe {action_type} tidak didukung.")
-
-    pause()
-
+        # jeda 10 menit dengan delay_inline
+        if i < loop_count - 1:
+            console.print(f"[{theme['text_sub']}]Tunggu 10 menit sebelum looping berikutnya...[/]")
+            delay_inline(600)
 
 
 def purchase_loop(
