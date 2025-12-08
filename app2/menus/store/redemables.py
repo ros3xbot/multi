@@ -165,10 +165,13 @@ def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = F
                     "item_name": variant.get("name", "") or option.get("name", ""),
                     "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
                 })
+
         elif r.get("action_type") == "PLP":
             family_code = r.get("action_param")
             family_pkgs = get_packages_by_family(family_code, is_enterprise, "")
             for pkg in family_pkgs or []:
+                if not isinstance(pkg, dict):
+                    continue  # skip kalau bukan dict
                 family = pkg.get("package_family", {}) or {}
                 if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
                     options = pkg.get("package_options", []) or []
@@ -182,6 +185,7 @@ def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = F
                             "item_name": variant.get("name", "") or option.get("name", ""),
                             "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
                         })
+
 
     if not candidates:
         print_panel("Informasi", f"Tidak ada bonus di kategori {choice} ({category_name}).")
