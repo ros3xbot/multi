@@ -74,11 +74,17 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                     None,
                 )
 
+                # ✅ Validasi hasil
+                if not target_package_detail or "package_option" not in target_package_detail:
+                    failed.append(option_name)
+                    print_panel("Kesalahan", f"Detail paket tidak ditemukan untuk {option_name}")
+                    continue
+
                 res = settlement_bounty(
                     api_key=api_key,
                     tokens=tokens,
-                    token_confirmation=target_package_detail["token_confirmation"],
-                    ts_to_sign=target_package_detail["timestamp"],
+                    token_confirmation=target_package_detail.get("token_confirmation", ""),
+                    ts_to_sign=target_package_detail.get("timestamp", ""),
                     payment_target=target_package_detail["package_option"]["package_option_code"],
                     price=target_package_detail["package_option"]["price"],
                     item_name=target_package_detail["package_option"]["name"],
