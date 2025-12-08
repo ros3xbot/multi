@@ -42,42 +42,53 @@ def redeem_all_visible(
     for cat in categories:
         cat_name = cat.get("category_name", "-")
         for r in cat.get("redeemables", []):
-            # hanya proses yang muncul di daftar redeemables
             action_type = r.get("action_type")
             action_param = r.get("action_param")
             item_name = r.get("name", "N/A")
 
-            if action_type == "PDP":
-                pkg = get_package(api_key, tokens, action_param)
-                if not pkg:
+            try:
+                if action_type == "PDP":
+                    pkg = get_package(api_key, tokens, action_param)
+                    if not pkg:
+                        continue
+                    option = pkg.get("package_option", {}) or {}
+                    res = settlement_bounty(
+                        api_key=api_key,
+                        tokens=tokens,
+                        token_confirmation=pkg.get("token_confirmation", ""),
+                        ts_to_sign=pkg.get("timestamp", ""),
+                        payment_target=action_param,
+                        price=option.get("price", 0),
+                        item_name=item_name,
+                    )
+                elif action_type == "PLP":
+                    # langsung claim family yang muncul, jangan loop semua option
+                    res = settlement_bounty(
+                        api_key=api_key,
+                        tokens=tokens,
+                        token_confirmation=r.get("token_confirmation", ""),
+                        ts_to_sign=r.get("timestamp", ""),
+                        payment_target=action_param,
+                        price=r.get("price", 0),
+                        item_name=item_name,
+                    )
+                else:
                     continue
-                option = pkg.get("package_option", {}) or {}
-                res = settlement_bounty(
-                    api_key=api_key,
-                    tokens=tokens,
-                    token_confirmation=pkg.get("token_confirmation", ""),
-                    ts_to_sign=pkg.get("timestamp", ""),
-                    payment_target=action_param,
-                    price=option.get("price", 0),
-                    item_name=item_name,
-                )
-            elif action_type == "PLP":
-                # langsung claim family yang muncul, jangan loop semua option
-                res = redeem_all_by_family(action_param, pause_on_success, delay_seconds, 1)
-            else:
-                continue
 
-            status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
-            console.print(Panel(
-                f"{cat_name} → {item_name} → Status: {status}",
-                border_style=theme["border_info"],
-                expand=True
-            ))
-            if status == "SUCCESS":
-                successful.append(item_name)
+                status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
+                console.print(Panel(
+                    f"{cat_name} → {item_name} → Status: {status}",
+                    border_style=theme["border_info"],
+                    expand=True
+                ))
+                if status == "SUCCESS":
+                    successful.append(item_name)
 
-            if delay_seconds > 0:
-                delay_inline(delay_seconds)
+                if delay_seconds > 0:
+                    delay_inline(delay_seconds)
+
+            except Exception as e:
+                print_panel("Kesalahan", f"Gagal redeem {item_name}: {e}")
 
     print_panel("Informasi", f"Selesai redeem. Total berhasil: {len(successful)}")
     if successful:
@@ -85,7 +96,6 @@ def redeem_all_visible(
         for s in successful:
             console.print(f"- {s}")
     pause()
-
 
 
 def purchase_loop(
