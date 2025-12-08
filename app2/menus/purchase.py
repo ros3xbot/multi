@@ -47,9 +47,15 @@ bonus_bookmarks = [
 def redeem_looping(loop_count: int, pause_on_success=True):
     theme = get_theme()
     api_key = AuthInstance.api_key
-    tokens = AuthInstance.get_active_tokens() or {}
 
     for i in range(loop_count):
+        # ✅ refresh token setiap loop
+        tokens = AuthInstance.get_active_tokens() or {}
+
+        # ✅ clear cache mulai dari loop ke-2
+        if i > 0:
+            clear_cache()
+
         console.rule()
         console.print(f"[{theme['text_title']}]Redeem Looping ke-{i+1}/{loop_count}[/]")
 
@@ -70,12 +76,10 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                     print_panel("Kesalahan", f"Gagal ambil data family untuk {option_name}")
                     continue
 
-                target_variant = None
-                for variant in family_data["package_variants"]:
-                    if variant["name"] == bm["variant_name"]:
-                        target_variant = variant
-                        break
-
+                target_variant = next(
+                    (v for v in family_data["package_variants"] if v["name"] == bm["variant_name"]),
+                    None
+                )
                 if not target_variant:
                     failed.append(option_name)
                     print_panel("Kesalahan", f"Variant tidak ditemukan untuk {option_name}")
@@ -120,6 +124,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                 failed.append(option_name)
                 print_panel("Kesalahan", f"Error saat redeem {option_name}: {e}")
 
+        # Summary panel
         console.rule()
         summary_text = f"Selesai looping {i+1}/{loop_count}\n" \
                        f"Berhasil: {len(successful)}\n" \
@@ -135,8 +140,8 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                 console.print(f"- {f}")
 
         if i < loop_count - 1:
-            console.print(f"[{theme['text_sub']}]Tunggu 12 menit sebelum looping berikutnya...[/]")
-            delay_inline(720)
+            console.print(f"[{theme['text_sub']}]Tunggu 11 menit sebelum looping berikutnya...[/]")
+            delay_inline(660)
 
 
 def purchase_loop(
