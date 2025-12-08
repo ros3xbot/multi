@@ -21,14 +21,12 @@ from app2.client.store.redeemables import get_redeemables
 console = Console()
 
 
-def redeem_all_visible(
-    pause_on_success: bool = True,
-    delay_seconds: int = 0,
-):
+pending_redeems = []
+
+def redeem_all_visible(pause_on_success=True, delay_seconds=0):
     theme = get_theme()
-    ensure_git()
     api_key = AuthInstance.api_key
-    tokens: dict = AuthInstance.get_active_tokens() or {}
+    tokens = AuthInstance.get_active_tokens() or {}
 
     redeemables_res = get_redeemables(api_key, tokens, False)
     if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
@@ -52,7 +50,6 @@ def redeem_all_visible(
         print_panel("Kesalahan", "Pilihan tidak valid.")
         return
 
-    # tampilkan detail opsi paket
     action_type = selected.get("action_type")
     action_param = selected.get("action_param")
     item_name = selected.get("name", "N/A")
@@ -65,33 +62,45 @@ def redeem_all_visible(
         option = pkg.get("package_option", {}) or {}
         console.print(f"Opsi paket: {option.get('name')} - Rp{get_rupiah(option.get('price',0))}")
         confirm = console.input("Claim paket ini? (y/n): ").lower()
-        if confirm != "y":
-            return
-        # eksekusi langsung
-        res = settlement_bounty(
-            api_key=api_key,
-            tokens=tokens,
-            token_confirmation=pkg.get("token_confirmation", ""),
-            ts_to_sign=pkg.get("timestamp", ""),
-            payment_target=action_param,
-            price=option.get("price", 0),
-            item_name=item_name,
-        )
+        if confirm == "y":
+            res = settlement_bounty(
+                api_key=api_key,
+                tokens=tokens,
+                token_confirmation=pkg.get("token_confirmation", ""),
+                ts_to_sign=pkg.get("timestamp", ""),
+                payment_target=action_param,
+                price=option.get("price", 0),
+                item_name=item_name,
+            )
+            console.print(f"Status: {res.get('status')}")
+            if res.get("status") != "SUCCESS":
+                pending_redeems.append(selected)
 
     elif action_type == "PLP":
         family_data = get_family(api_key, tokens, action_param)
         if not family_data:
             print_panel("Kesalahan", "Gagal ambil data family.")
             return
-        variant = family_data.get("package_variants", [])[0]
-        options = variant.get("package_options", [])
+        # filter hanya opsi yang sesuai redeemable
+        redeemable_code = selected.get("action_param")
+        options = []
+        for v in family_data.get("package_variants", []):
+            for opt in v.get("package_options", []):
+                if opt["package_option_code"] == redeemable_code:
+                    options.append(opt)
+
+        if not options:
+            print_panel("Informasi", "Tidak ada opsi redeemable di family ini.")
+            return
+
         for opt in options:
             console.print(f"{opt['order']} → {opt['name']} - Rp{get_rupiah(opt['price'])}")
-        order = int(console.input("Pilih order option: ") or 1)
+        order = int(console.input("Pilih order option: ") or options[0]["order"])
         target_opt = next((o for o in options if o["order"] == order), None)
         if not target_opt:
             print_panel("Kesalahan", "Option tidak valid.")
             return
+
         res = settlement_bounty(
             api_key=api_key,
             tokens=tokens,
@@ -101,12 +110,13 @@ def redeem_all_visible(
             price=target_opt["price"],
             item_name=target_opt["name"],
         )
+        console.print(f"Status: {res.get('status')}")
+        if res.get("status") != "SUCCESS":
+            pending_redeems.append(selected)
+
     else:
         print_panel("Informasi", f"Tipe {action_type} tidak didukung.")
-        return
 
-    status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
-    console.print(Panel(f"{item_name} → Status: {status}", border_style=theme["border_info"]))
     pause()
 
 
