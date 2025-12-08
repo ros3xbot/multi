@@ -110,18 +110,8 @@ def show_redeemables_menu(is_enterprise: bool = False):
 
 
 def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterprise: bool = False):
-    """Redeem semua bonus dari kategori tertentu (A, B, C dst)."""
     theme = get_theme()
     clear_screen()
-
-    console.print(Panel(
-        Align.center(f"Redeem Semua Bonus Kategori {cat_choice}", vertical="middle"),
-        border_style=theme["border_info"],
-        padding=(1, 2),
-        expand=True
-    ))
-    simple_number()
-    ensure_git()
 
     idx = ord(cat_choice) - 65
     if idx < 0 or idx >= len(categories):
@@ -135,33 +125,29 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
     candidates = []
     for r in redeemables:
         if r.get("action_type") == "PDP":
-            option_code = r.get("action_param")
-            pkg = get_package(api_key, tokens, option_code)
-            if not isinstance(pkg, dict):
-                continue
-            family = pkg.get("package_family", {}) or {}
-            if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                option = pkg.get("package_option", {}) or {}
-                variant = pkg.get("package_detail_variant", {}) or {}
-                candidates.append({
-                    "option_code": option_code,
-                    "token_confirmation": pkg.get("token_confirmation", ""),
-                    "ts_to_sign": pkg.get("timestamp", ""),
-                    "price": option.get("price", 0),
-                    "item_name": variant.get("name", "") or option.get("name", ""),
-                    "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
-                })
+            pkg = get_package(api_key, tokens, r.get("action_param"))
+            if isinstance(pkg, dict):
+                family = pkg.get("package_family", {}) or {}
+                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
+                    option = pkg.get("package_option", {}) or {}
+                    variant = pkg.get("package_detail_variant", {}) or {}
+                    candidates.append({
+                        "option_code": r.get("action_param"),
+                        "token_confirmation": pkg.get("token_confirmation", ""),
+                        "ts_to_sign": pkg.get("timestamp", ""),
+                        "price": option.get("price", 0),
+                        "item_name": variant.get("name", "") or option.get("name", ""),
+                        "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
+                    })
         elif r.get("action_type") == "PLP":
-            family_code = r.get("action_param")
-            family_pkgs = get_packages_by_family(family_code, is_enterprise, "")
+            family_pkgs = get_packages_by_family(r.get("action_param"), is_enterprise, "")
             for pkg in family_pkgs or []:
                 if not isinstance(pkg, dict):
                     continue
                 family = pkg.get("package_family", {}) or {}
                 if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                    options = pkg.get("package_options", []) or []
-                    variant = pkg.get("package_detail_variant", {}) or {}
-                    for option in options:
+                    for option in pkg.get("package_options", []) or []:
+                        variant = pkg.get("package_detail_variant", {}) or {}
                         candidates.append({
                             "option_code": option.get("package_option_code", ""),
                             "token_confirmation": pkg.get("token_confirmation", ""),
@@ -175,13 +161,13 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
         print_panel("Informasi", f"Tidak ada bonus di kategori {cat_choice} ({category_name}).")
         return
 
+    # preview
     preview = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
     preview.add_column("Kode", style=theme["text_key"], width=6)
     preview.add_column("Nama", style=theme["text_body"])
     preview.add_column("Harga", style=theme["text_money"], justify="right")
     for j, c in enumerate(candidates, start=1):
         preview.add_row(f"{cat_choice}{j}", c["title"], f"Rp {get_rupiah(c['price'])}")
-
     console.print(Panel(preview, title=f"[{theme['text_title']}]Bonus kategori {cat_choice} - {category_name}[/]", border_style=theme["border_success"]))
 
     confirm = console.input("Lanjutkan redeem semua bonus kategori ini? (y/n): ").strip().lower()
@@ -189,32 +175,19 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
         print_panel("Informasi", "Proses dibatalkan.")
         return
 
-    delay_seconds = 10 * 60  # default 10 menit
-
+    delay_seconds = 10 * 60
     for j, c in enumerate(candidates, start=1):
         res = settlement_bounty(
             api_key=api_key,
             tokens=tokens,
             token_confirmation=c["token_confirmation"],
             ts_to_sign=c["ts_to_sign"],
-            payment_target=c["option_code"],  # gunakan package_option_code
+            payment_target=c["option_code"],
             price=c["price"],
             item_name=c["item_name"]
         )
-
-        status = "Berhasil"
-        note = "-"
-        if isinstance(res, dict):
-            if res.get("status") != "SUCCESS":
-                status = "Gagal"
-                note = res.get("message", "Terjadi kesalahan.")
-
-        console.print(Panel(
-            f"Bonus {cat_choice}{j} → {c['title']} → Status: {status}\nKeterangan: {note}",
-            border_style=theme["border_info"],
-            expand=True
-        ))
-
+        status = res.get("status", "UNKNOWN") if isinstance(res, dict) else "OK"
+        print_panel("Informasi", f"Bonus {cat_choice}{j} → {c['title']} → status: {status}")
         if j < len(candidates):
             delay_inline(delay_seconds)
 
