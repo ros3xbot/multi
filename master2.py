@@ -6,7 +6,7 @@ from datetime import datetime
 from app2.config.imports import *
 from app2.menus.util import clear_screenx
 from app2.menus.sharing import show_balance_allotment_menu
-from app2.menus.purchase import redeem_all_by_family
+from app2.menus.purchase import redeem_all_visible
 from app2.client.store.redeemables import get_redeemables
 
 
@@ -356,7 +356,7 @@ def main():
             
                 # jalankan redeem_all_by_family untuk semua PLP
                 for family_code in plp_codes:
-                    redeem_all_by_family(family_code, pause_on_success, delay_seconds, start_from_option)
+                    redeem_all_visible(family_code, pause_on_success, delay_seconds, start_from_option)
                   
 
             elif choice.lower() == "d":
