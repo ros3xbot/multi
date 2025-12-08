@@ -80,7 +80,10 @@ def show_main_menu(profile: dict, display_quota: str, segments: dict):
     menu_table.add_row("7", "💵 Beli paket via Family Code")
     menu_table.add_row("8", "🛒 Beli semua paket di Family Code")
     menu_table.add_row("9", "🔂 Auto Loop target Paket by Family")
-    menu_table.add_row("10", "reedem all")
+    menu_table.add_row("10", "🎁 Claim Bonus Bebas Puas (Looping)")
+    menu_table.add_row("", "    -Kuota Youtube & Tiktok 3.13 GB ")
+    menu_table.add_row("", "    -Kuota Utama 1.25 GB ")
+    menu_table.add_row("", "    -Kuota Malam 3.75 GB ")
     menu_table.add_row("", "")
     menu_table.add_row("[D]", "🎭 Buat bundle paket decoy")
     menu_table.add_row("[F]", "💾 Simpan/Kelola Family Code")
@@ -330,11 +333,11 @@ def main():
 
             elif choice == "10":
                 try:
-                    loop_count = int(console.input("Berapa kali looping redeem? ") or 1)
+                    loop_count = int(console.input("Berapa kali looping ? ") or 1)
                 except ValueError:
                     loop_count = 1
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
-                redeem_bookmark_looping(loop_count, pause_on_success)
+                redeem_looping(loop_count, pause_on_success)
   
 
             elif choice.lower() == "d":
