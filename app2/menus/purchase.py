@@ -44,14 +44,14 @@ bonus_bookmarks = [
     }
 ]
 
-def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
+def redeem_looping(loop_count: int, pause_on_success=True):
     theme = get_theme()
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens() or {}
 
     for i in range(loop_count):
         console.rule()
-        console.print(f"[{theme['text_title']}]Redeem Bookmark Looping ke-{i+1}/{loop_count}[/]")
+        console.print(f"[{theme['text_title']}]Redeem Looping ke-{i+1}/{loop_count}[/]")
 
         successful = []
         failed = []
@@ -137,6 +137,7 @@ def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
         if i < loop_count - 1:
             console.print(f"[{theme['text_sub']}]Tunggu 10 menit sebelum looping berikutnya...[/]")
             delay_inline(600)
+
 
 def purchase_loop(
     family_code: str,
