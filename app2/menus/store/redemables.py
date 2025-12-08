@@ -5,33 +5,18 @@ from app2.menus.package import show_package_details, get_package  # penting: jan
 from app2.config.imports import *
 from datetime import datetime
 
+import json
+from app2.client.engsel import send_api_request
+
 console = Console()
 
-
-import json
-from app3.client.engsel import send_api_request
-from app3.config.theme_config import get_theme
-from app3.menus.util import live_loading, print_panel
-
-def fetch_family_packages_data(api_key: str, tokens: dict, family_code: str, is_enterprise: bool = False) -> list[dict]:
-    """
-    Mengambil data paket dalam sebuah family secara NON-INTERAKTIF.
-    Return: list[dict] paket (tiap dict memuat package_family, package_options, dst.)
-    """
+def fetch_family_packages_data(api_key, tokens, family_code, is_enterprise=False):
     path = f"api/v8/store/packages/family/{family_code}"
     payload = {"is_enterprise": is_enterprise, "lang": "en"}
-
-    with live_loading(f"📦 Ambil paket family {family_code}...", get_theme()):
-        res = send_api_request(api_key, path, payload, tokens["id_token"], "POST")
-
+    res = send_api_request(api_key, path, payload, tokens["id_token"], "POST")
     if not res or res.get("status") != "SUCCESS":
-        print_panel("⚠️ Ups", f"Gagal ambil paket family {family_code}")
         return []
-
-    # Struktur hasil biasanya: {"status":"SUCCESS","data":{"packages":[...]}}
-    packages = res.get("data", {}).get("packages", [])
-    return packages or []
-
+    return res.get("data", {}).get("packages", [])
 
 
 def show_redeemables_menu(is_enterprise: bool = False):
@@ -183,11 +168,9 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
                 family = pkg.get("package_family", {}) or {}
                 if (family.get("payment_for") or "BUY_PACKAGE") != "REDEEM_VOUCHER":
                     continue
-
                 options = pkg.get("package_options", []) or []
                 variant = pkg.get("package_detail_variant", {}) or {}
                 for option in options:
-                    # Penting: gunakan package_option_code sebagai payment_target
                     candidates.append({
                         "option_code": option.get("package_option_code", ""),
                         "token_confirmation": pkg.get("token_confirmation", ""),
@@ -196,6 +179,7 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
                         "item_name": variant.get("name", "") or option.get("name", ""),
                         "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
                     })
+
 
     if not candidates:
         print_panel("Informasi", f"Tidak ada bonus di kategori {cat_choice} ({category_name}).")
@@ -222,10 +206,11 @@ def show_redeem_all_bonuses(api_key, tokens, categories, cat_choice, is_enterpri
             tokens=tokens,
             token_confirmation=c["token_confirmation"],
             ts_to_sign=c["ts_to_sign"],
-            payment_target=c["option_code"],  # HARUS: package_option_code agar tidak minta input manual
+            payment_target=c["option_code"],  # HARUS package_option_code
             price=c["price"],
             item_name=c["item_name"]
         )
+
 
         status = "Berhasil"
         note = "-"
