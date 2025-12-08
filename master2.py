@@ -328,12 +328,34 @@ def main():
                 continue
 
             elif choice == "10":
-                family_code = console.input("Masukkan family code: ")
+                # Ambil semua redeemables dulu
+                redeemables_res = get_redeemables(AuthInstance.api_key, active_user["tokens"], False)
+                if not redeemables_res:
+                    print_panel("Informasi", "Tidak ada redeemables tersedia.")
+                    pause()
+                    continue
+            
+                categories = redeemables_res.get("data", {}).get("categories", [])
+                # kumpulkan semua PLP
+                plp_codes = []
+                for cat in categories:
+                    for r in cat.get("redeemables", []):
+                        if r.get("action_type") == "PLP":
+                            plp_codes.append(r.get("action_param"))
+            
+                if not plp_codes:
+                    print_panel("Informasi", "Tidak ada bonus PLP untuk diredeem.")
+                    pause()
+                    continue
+            
                 start_from_option = int(console.input("Mulai dari option number (default 1): ") or 1)
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
                 delay_seconds = int(console.input("Delay antar redeem (0 = tanpa delay): ") or 0)
-                redeem_all_by_family(family_code, pause_on_success, delay_seconds, start_from_option)
-                        
+            
+                # jalankan redeem_all_by_family untuk semua PLP
+                for family_code in plp_codes:
+                    redeem_all_by_family(family_code, pause_on_success, delay_seconds, start_from_option)
+                  
 
             elif choice.lower() == "d":
                 show_bundle_menu()
