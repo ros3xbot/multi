@@ -330,18 +330,8 @@ def main():
                 continue
 
             elif choice == "10":
-                # Ambil semua redeemables dulu
-                redeemables_res = get_redeemables(AuthInstance.api_key, active_user["tokens"], False)
-                if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
-                    print_panel("Informasi", "Tidak ada redeemables tersedia.")
-                    pause()
-                    continue
-            
-                start_from_option = int(console.input("Mulai dari option number (default 1): ") or 1)
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
                 delay_seconds = int(console.input("Delay antar redeem (0 = tanpa delay): ") or 0)
-            
-                # langsung jalankan redeem_all_visible (versi baru) untuk semua item yang muncul
                 redeem_all_visible(pause_on_success=pause_on_success,
                                    delay_seconds=delay_seconds)
 
