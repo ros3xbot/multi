@@ -332,21 +332,8 @@ def main():
             elif choice == "10":
                 # Ambil semua redeemables dulu
                 redeemables_res = get_redeemables(AuthInstance.api_key, active_user["tokens"], False)
-                if not redeemables_res:
+                if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
                     print_panel("Informasi", "Tidak ada redeemables tersedia.")
-                    pause()
-                    continue
-            
-                categories = redeemables_res.get("data", {}).get("categories", [])
-                # kumpulkan semua PLP
-                plp_codes = []
-                for cat in categories:
-                    for r in cat.get("redeemables", []):
-                        if r.get("action_type") == "PLP":
-                            plp_codes.append(r.get("action_param"))
-            
-                if not plp_codes:
-                    print_panel("Informasi", "Tidak ada bonus PLP untuk diredeem.")
                     pause()
                     continue
             
@@ -354,10 +341,9 @@ def main():
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
                 delay_seconds = int(console.input("Delay antar redeem (0 = tanpa delay): ") or 0)
             
-                # jalankan redeem_all_by_family untuk semua PLP
-                for family_code in plp_codes:
-                    redeem_all_visible(family_code, pause_on_success, delay_seconds, start_from_option)
-                  
+                # langsung jalankan redeem_all_visible (versi baru) untuk semua item yang muncul
+                redeem_all_visible(pause_on_success=pause_on_success,
+                                   delay_seconds=delay_seconds)
 
             elif choice.lower() == "d":
                 show_bundle_menu()
