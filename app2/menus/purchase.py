@@ -16,7 +16,6 @@ from app2.menus.util import (
 )
 
 from app2.client.purchase.redeem import settlement_bounty
-#from app2.client.store.redeemables import get_redeemables
 
 
 console = Console()
@@ -65,7 +64,6 @@ def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
             console.print(f"Claim bonus: {bm['variant_name']} - {order}. {option_name}")
 
             try:
-                # Ambil family untuk dapat variant_code
                 family_data = get_family(api_key, tokens, family_code)
                 if not family_data:
                     failed.append(option_name)
@@ -122,7 +120,6 @@ def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
                 failed.append(option_name)
                 print_panel("Kesalahan", f"Error saat redeem {option_name}: {e}")
 
-        # Summary panel per looping
         console.rule()
         summary_text = f"Selesai looping {i+1}/{loop_count}\n" \
                        f"Berhasil: {len(successful)}\n" \
@@ -137,7 +134,6 @@ def redeem_bookmark_looping(loop_count: int, pause_on_success=True):
             for f in failed:
                 console.print(f"- {f}")
 
-        # jeda 10 menit dengan delay_inline
         if i < loop_count - 1:
             console.print(f"[{theme['text_sub']}]Tunggu 10 menit sebelum looping berikutnya...[/]")
             delay_inline(600)
