@@ -86,7 +86,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
             continue
 
         if choice == "99":
-            show_redeem_all_bonuses(api_key, tokens, categories)
+            show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise)
             pause()
             continue
         
@@ -108,7 +108,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
             pause()
 
 
-def show_redeem_all_bonuses(api_key, tokens, categories):
+def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = False):
     """Redeem semua bonus dari kategori tertentu (A, B, C dst)."""
     theme = get_theme()
     clear_screen()
@@ -141,7 +141,7 @@ def show_redeem_all_bonuses(api_key, tokens, categories):
     category_name = category.get("category_name", f"Kategori {choice}")
     redeemables = category.get("redeemables", [])
 
-    # filter bonus PDP
+    # kumpulkan kandidat bonus dari PDP atau PLP
     candidates = []
     for r in redeemables:
         if r.get("action_type") == "PDP":
@@ -161,6 +161,22 @@ def show_redeem_all_bonuses(api_key, tokens, categories):
                     "item_name": variant.get("name", "") or option.get("name", ""),
                     "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
                 })
+        elif r.get("action_type") == "PLP":
+            family_code = r.get("action_param")
+            family_pkgs = get_packages_by_family(family_code, is_enterprise, "")
+            for pkg in family_pkgs or []:
+                family = pkg.get("package_family", {}) or {}
+                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
+                    option = pkg.get("package_option", {}) or {}
+                    variant = pkg.get("package_detail_variant", {}) or {}
+                    candidates.append({
+                        "option_code": option.get("package_option_code", ""),
+                        "token_confirmation": pkg.get("token_confirmation", ""),
+                        "ts_to_sign": pkg.get("timestamp", ""),
+                        "price": option.get("price", 0),
+                        "item_name": variant.get("name", "") or option.get("name", ""),
+                        "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
+                    })
 
     if not candidates:
         print_panel("Informasi", f"Tidak ada bonus di kategori {choice} ({category_name}).")
