@@ -1,7 +1,6 @@
 import json
 import sys
 import requests
-import time
 
 from app2.config.imports import *
 from app.type_dict import PaymentItem
@@ -363,50 +362,17 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         pause()
         return True
 
-#    elif choice.lower() == "b":
-#        settlement_bounty(
-#            api_key=api_key,
-#            tokens=tokens,
-#            token_confirmation=token_confirmation,
-#            ts_to_sign=ts_to_sign,
-#            payment_target=package_option_code,
-#            price=price,
-#            item_name=variant_name
-#        )
-#        print_panel("Berhasil", "Bonus berhasil diambil.")
-#        pause()
-#        return True
-
     elif choice.lower() == "b":
-        n_times_str = console.input("Jumlah pengambilan bonus: ").strip()
-    
-        try:
-            n_times = int(n_times_str)
-            if n_times < 1:
-                raise ValueError("Minimal 1 kali.")
-        except ValueError:
-            print_panel("Kesalahan", "Input jumlah tidak valid.")
-            pause()
-            return "BACK"
-    
-        delay_seconds = 10 * 60  # default 10 menit
-    
-        for i in range(n_times):
-            settlement_bounty(
-                api_key=api_key,
-                tokens=tokens,
-                token_confirmation=token_confirmation,
-                ts_to_sign=ts_to_sign,
-                payment_target=package_option_code,
-                price=price,
-                item_name=variant_name
-            )
-            print_panel("Berhasil", f"Bonus ke-{i+1} berhasil diambil.")
-    
-            if i < n_times - 1:
-                # tampilkan countdown visual
-                delay_inline(delay_seconds)
-    
+        settlement_bounty(
+            api_key=api_key,
+            tokens=tokens,
+            token_confirmation=token_confirmation,
+            ts_to_sign=ts_to_sign,
+            payment_target=package_option_code,
+            price=price,
+            item_name=variant_name
+        )
+        #print_panel("Berhasil", "Bonus berhasil diambil.")
         pause()
         return True
 
