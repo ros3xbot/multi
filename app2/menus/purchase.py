@@ -26,7 +26,7 @@ pending_redeems = []
 def redeem_all_visible(pause_on_success=True, delay_seconds=0):
     theme = get_theme()
     api_key = AuthInstance.api_key
-    tokens = AuthInstance.get_active_tokens() or {}
+    tokens: dict = AuthInstance.get_active_tokens() or {}
 
     redeemables_res = get_redeemables(api_key, tokens, False)
     if not redeemables_res or redeemables_res.get("status") != "SUCCESS":
@@ -73,20 +73,18 @@ def redeem_all_visible(pause_on_success=True, delay_seconds=0):
                 item_name=item_name,
             )
             console.print(f"Status: {res.get('status')}")
-            if res.get("status") != "SUCCESS":
-                pending_redeems.append(selected)
 
     elif action_type == "PLP":
         family_data = get_family(api_key, tokens, action_param)
         if not family_data:
             print_panel("Kesalahan", "Gagal ambil data family.")
             return
-        # filter hanya opsi yang sesuai redeemable
-        redeemable_code = selected.get("action_param")
+
         options = []
         for v in family_data.get("package_variants", []):
             for opt in v.get("package_options", []):
-                if opt["package_option_code"] == redeemable_code:
+                family = family_data.get("package_family", {}) or {}
+                if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
                     options.append(opt)
 
         if not options:
@@ -111,13 +109,12 @@ def redeem_all_visible(pause_on_success=True, delay_seconds=0):
             item_name=target_opt["name"],
         )
         console.print(f"Status: {res.get('status')}")
-        if res.get("status") != "SUCCESS":
-            pending_redeems.append(selected)
 
     else:
         print_panel("Informasi", f"Tipe {action_type} tidak didukung.")
 
     pause()
+
 
 
 def purchase_loop(
