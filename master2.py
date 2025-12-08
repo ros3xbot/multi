@@ -7,6 +7,8 @@ from app2.config.imports import *
 from app2.menus.util import clear_screenx
 from app2.menus.sharing import show_balance_allotment_menu
 from app2.menus.purchase import redeem_all_by_family
+from app2.client.store.redeemables import get_redeemables
+
 
 def show_main_menu(profile: dict, display_quota: str, segments: dict):
     clear_screenx()
