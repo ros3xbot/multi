@@ -109,7 +109,11 @@ def show_redeemables_menu(is_enterprise: bool = False):
 
 
 def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = False):
-    """Redeem semua bonus dari kategori tertentu (A, B, C dst)."""
+    """
+    Redeem semua bonus dari kategori tertentu (A, B, C dst).
+    - Bisa handle PDP langsung.
+    - Bisa handle PLP dengan expand ke semua package_options.
+    """
     theme = get_theme()
     clear_screen()
 
@@ -167,16 +171,17 @@ def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = F
             for pkg in family_pkgs or []:
                 family = pkg.get("package_family", {}) or {}
                 if (family.get("payment_for") or "BUY_PACKAGE") == "REDEEM_VOUCHER":
-                    option = pkg.get("package_option", {}) or {}
+                    options = pkg.get("package_options", []) or []
                     variant = pkg.get("package_detail_variant", {}) or {}
-                    candidates.append({
-                        "option_code": option.get("package_option_code", ""),
-                        "token_confirmation": pkg.get("token_confirmation", ""),
-                        "ts_to_sign": pkg.get("timestamp", ""),
-                        "price": option.get("price", 0),
-                        "item_name": variant.get("name", "") or option.get("name", ""),
-                        "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
-                    })
+                    for option in options:
+                        candidates.append({
+                            "option_code": option.get("package_option_code", ""),
+                            "token_confirmation": pkg.get("token_confirmation", ""),
+                            "ts_to_sign": pkg.get("timestamp", ""),
+                            "price": option.get("price", 0),
+                            "item_name": variant.get("name", "") or option.get("name", ""),
+                            "title": f"{family.get('name','')} - {variant.get('name','')} - {option.get('name','')}".strip()
+                        })
 
     if not candidates:
         print_panel("Informasi", f"Tidak ada bonus di kategori {choice} ({category_name}).")
@@ -205,7 +210,7 @@ def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = F
             tokens=tokens,
             token_confirmation=c["token_confirmation"],
             ts_to_sign=c["ts_to_sign"],
-            payment_target=c["option_code"],
+            payment_target=c["option_code"],  # penting: gunakan package_option_code
             price=c["price"],
             item_name=c["item_name"]
         )
@@ -214,3 +219,4 @@ def show_redeem_all_bonuses(api_key, tokens, categories, is_enterprise: bool = F
 
         if j < len(candidates):
             delay_inline(delay_seconds)
+
