@@ -334,12 +334,11 @@ def main():
 
             elif choice == "10":
                 try:
-                    loop_count = int(console.input("Berapa kali looping ? ") or 1)
+                    loop_count = int(console.input(f"[{theme['text_sub']}]Berapa kali looping? :[/{theme['text_sub']}] ") or 1)
                 except ValueError:
                     loop_count = 1
-                pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
+                pause_on_success = console.input(f"[{theme['text_sub']}]Pause setiap sukses? (y/n): [/{theme['text_sub']}] ").lower() == "y"
                 redeem_looping(loop_count, pause_on_success)
-  
 
             elif choice.lower() == "d":
                 show_bundle_menu()
