@@ -6,7 +6,7 @@ from datetime import datetime
 from app2.config.imports import *
 from app2.menus.util import clear_screenx
 from app2.menus.sharing import show_balance_allotment_menu
-from app2.menus.purchase import redeem_looping
+from app2.menus.purchase import redeem_bookmark_looping
 
 
 def show_main_menu(profile: dict, display_quota: str, segments: dict):
@@ -334,8 +334,8 @@ def main():
                 except ValueError:
                     loop_count = 1
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
-                redeem_looping(loop_count, pause_on_success)
-            
+                redeem_bookmark_looping(loop_count, pause_on_success)
+  
 
             elif choice.lower() == "d":
                 show_bundle_menu()
