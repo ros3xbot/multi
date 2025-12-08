@@ -7,7 +7,6 @@ from app2.config.imports import *
 from app2.menus.util import clear_screenx
 from app2.menus.sharing import show_balance_allotment_menu
 from app2.menus.purchase import redeem_all_visible
-from app2.client.store.redeemables import get_redeemables
 
 
 def show_main_menu(profile: dict, display_quota: str, segments: dict):
@@ -332,8 +331,12 @@ def main():
             elif choice == "10":
                 pause_on_success = console.input("Pause setiap sukses? (y/n): ").lower() == "y"
                 delay_seconds = int(console.input("Delay antar redeem (0 = tanpa delay): ") or 0)
-                redeem_all_visible(pause_on_success=pause_on_success,
-                                   delay_seconds=delay_seconds)
+            
+                # panggil langsung fungsi redeem_all_visible
+                redeem_all_visible(
+                    pause_on_success=pause_on_success,
+                    delay_seconds=delay_seconds
+                )
 
             elif choice.lower() == "d":
                 show_bundle_menu()
