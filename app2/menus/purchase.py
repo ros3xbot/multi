@@ -17,10 +17,10 @@ from app2.menus.util import (
 
 from app2.client.purchase.redeem import settlement_bounty
 
-
 console = Console()
 
-bonus_bookmarks = [
+
+bonus_bp = [
     {
         "family_name": "Bonus Bebas Puas",
         "family_code": "7e5eb288-58a0-44d0-8002-b66bad210f21",
@@ -49,10 +49,8 @@ def redeem_looping(loop_count: int, pause_on_success=True):
     api_key = AuthInstance.api_key
 
     for i in range(loop_count):
-        # ✅ refresh token setiap loop
         tokens = AuthInstance.get_active_tokens() or {}
 
-        # ✅ clear cache mulai dari loop ke-2
         if i > 0:
             clear_cache()
 
@@ -62,7 +60,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
         successful = []
         failed = []
 
-        for bm in bonus_bookmarks:
+        for bm in bonus_bp:
             family_code = bm["family_code"]
             order = bm["order"]
             option_name = bm["option_name"]
@@ -124,7 +122,6 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                 failed.append(option_name)
                 print_panel("Kesalahan", f"Error saat redeem {option_name}: {e}")
 
-        # Summary panel
         console.rule()
         summary_text = f"Selesai looping {i+1}/{loop_count}\n" \
                        f"Berhasil: {len(successful)}\n" \
