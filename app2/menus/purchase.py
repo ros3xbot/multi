@@ -16,6 +16,7 @@ from app2.menus.util import (
 )
 
 from app2.client.purchase.redeem import settlement_bounty
+from app2.client.store.redeemables import get_redeemables
 
 console = Console()
 
