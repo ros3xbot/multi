@@ -15,6 +15,8 @@ from app2.menus.util import (
     format_quota_byte
 )
 
+from app2.client.purchase.redeem import settlement_bounty
+
 console = Console()
 
 
