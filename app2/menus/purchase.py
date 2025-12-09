@@ -65,7 +65,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
             order = bm["order"]
             option_name = bm["option_name"]
 
-            console.print(f"Claim bonus: {bm['variant_name']} - {order}. {option_name}")
+            console.print(f"Claim bonus: {bm['variant_name']} - {option_name}")
 
             try:
                 family_data = get_family(api_key, tokens, family_code)
