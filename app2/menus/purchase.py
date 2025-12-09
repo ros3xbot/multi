@@ -148,7 +148,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
 
         if i < loop_count - 1:
             console.print(f"[{theme['text_sub']}]Tunggu 11 menit sebelum looping berikutnya...[/]")
-            delay_inline(6)
+            delay_inline(660)
 
     console.rule()
     console.print(Panel("Rekap Akhir Semua Looping", border_style=theme["border_primary"]))
