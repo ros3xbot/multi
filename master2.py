@@ -333,6 +333,12 @@ def main():
                 continue
 
             elif choice == "10":
+                unlock_code = console.input(f"[{theme['text_sub']}]Masukkan kode unlock:[/{theme['text_sub']}] ").strip()
+                if unlock_code != "barbex":
+                    print_panel("Kesalahan", "Kode unlock salah, akses ditolak.")
+                    pause()
+                    continue
+            
                 try:
                     loop_count = int(console.input(f"[{theme['text_sub']}]Berapa kali looping? :[/{theme['text_sub']}] ") or 1)
                 except ValueError:
