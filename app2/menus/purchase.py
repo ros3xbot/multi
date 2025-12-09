@@ -16,6 +16,7 @@ from app2.menus.util import (
 )
 
 from app2.client.purchase.redeem import settlement_bounty
+from collections import defaultdict
 
 console = Console()
 
@@ -48,6 +49,9 @@ def redeem_looping(loop_count: int, pause_on_success=True):
     theme = get_theme()
     api_key = AuthInstance.api_key
 
+    total_success = defaultdict(int)
+    total_failed = defaultdict(int)
+
     for i in range(loop_count):
         tokens = AuthInstance.get_active_tokens() or {}
 
@@ -71,6 +75,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                 family_data = get_family(api_key, tokens, family_code)
                 if not family_data:
                     failed.append(option_name)
+                    total_failed[option_name] += 1
                     print_panel("Kesalahan", f"Gagal ambil data family untuk {option_name}")
                     continue
 
@@ -80,6 +85,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
                 )
                 if not target_variant:
                     failed.append(option_name)
+                    total_failed[option_name] += 1
                     print_panel("Kesalahan", f"Variant tidak ditemukan untuk {option_name}")
                     continue
 
@@ -95,6 +101,7 @@ def redeem_looping(loop_count: int, pause_on_success=True):
 
                 if not target_package_detail or "package_option" not in target_package_detail:
                     failed.append(option_name)
+                    total_failed[option_name] += 1
                     print_panel("Kesalahan", f"Detail paket tidak ditemukan untuk {option_name}")
                     continue
 
@@ -110,16 +117,19 @@ def redeem_looping(loop_count: int, pause_on_success=True):
 
                 if res and res.get("status", "") == "SUCCESS":
                     successful.append(option_name)
+                    total_success[option_name] += 1
                     print_panel("Sukses", f"Redeem berhasil: {option_name}")
                     if pause_on_success:
                         pause()
                 else:
                     msg = res.get("message", "Tidak diketahui") if isinstance(res, dict) else "Error"
                     failed.append(option_name)
+                    total_failed[option_name] += 1
                     print_panel("Kesalahan", f"Redeem gagal: {msg}")
 
             except Exception as e:
                 failed.append(option_name)
+                total_failed[option_name] += 1
                 print_panel("Kesalahan", f"Error saat redeem {option_name}: {e}")
 
         console.rule()
@@ -138,9 +148,21 @@ def redeem_looping(loop_count: int, pause_on_success=True):
 
         if i < loop_count - 1:
             console.print(f"[{theme['text_sub']}]Tunggu 11 menit sebelum looping berikutnya...[/]")
-            delay_inline(6)
+            delay_inline(600)
+
+    console.rule()
+    console.print(Panel("Rekap Akhir Semua Looping", border_style=theme["border_primary"]))
+    if total_success:
+        console.print("Total sukses:")
+        for name, count in total_success.items():
+            console.print(f"- {name} {count}x sukses")
+    if total_failed:
+        console.print("Total gagal:")
+        for name, count in total_failed.items():
+            console.print(f"- {name} {count}x gagal")
 
     pause()
+
 
 
 def purchase_loop(
