@@ -140,6 +140,8 @@ def redeem_looping(loop_count: int, pause_on_success=True):
             console.print(f"[{theme['text_sub']}]Tunggu 11 menit sebelum looping berikutnya...[/]")
             delay_inline(660)
 
+    pause()
+
 
 def purchase_loop(
     family_code: str,
